@@ -20,25 +20,6 @@ const CustomerLogin = () => {
       [name]: value
     }));
   };
-  const testFetch = async () => {
-    try {
-      const response = await fetch('http://localhost:5001/api/customer/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: 'testuser@gmail.com',
-          password: 'mypassword',
-          firstName: 'Test',
-          lastName: 'User'
-        })
-      });
-  
-      const data = await response.json();
-      console.log('Server response:', data);
-    } catch (error) {
-      console.error('Error during fetch:', error);
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -165,7 +146,6 @@ const CustomerLogin = () => {
             {isLogin ? 'Sign Up' : 'Login'}
           </button>
         </p>
-        <button onClick={testFetch}>Test Fetch Signup</button>
         
         <button 
           className="back-button"
