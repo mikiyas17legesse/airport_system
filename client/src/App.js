@@ -1,8 +1,8 @@
 import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import MainPage from './pages/MainPage';
-import StaffLogin from './pages/StaffLogin';
-import CustomerLogin from './pages/CustomerLogin';
+import MainPage from './Pages/MainPage';
+import StaffLogin from './Pages/StaffLogin';
+import CustomerLogin from './Pages/CustomerLogin';
 
 function App() {
   return (
