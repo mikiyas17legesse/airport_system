@@ -3,7 +3,6 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import MainPage from './pages/MainPage';
 import StaffLogin from './pages/StaffLogin';
 import CustomerLogin from './pages/CustomerLogin';
-import HomePage from './pages/HomePage';
 
 function App() {
   return (

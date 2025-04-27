@@ -26,28 +26,6 @@ const StaffLogin = () => {
       alert("Passwords do not match!");
       return;
     }
-    if (!isLogin) {
-      fetch('/api/auth/staff-signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert('Staff created successfully!');
-          navigate('/');
-        } else {
-          alert(data.message);
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('Failed to create staff.');
-      });
-    }
     console.log('Form submitted:', formData);
   };
 
@@ -61,7 +39,6 @@ const StaffLogin = () => {
     <h4>Contact Information</h4>
     <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Email" required />
     <input type="tel" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} placeholder="Phone Number" required />
-    <input type="text" name="airlineName" value={formData.airlineName} onChange={handleChange} placeholder="Airline Name" required />
   </>;
 
   const DOBField = () => <>

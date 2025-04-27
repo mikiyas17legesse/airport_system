@@ -25,51 +25,20 @@ const CustomerLogin = () => {
       alert("Passwords do not match");
       return;
     }
-    // Call the sign up endpoint which handles db querying
-    if (isLogin) {
-      fetch('/api/auth/customer-login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert('Login successful.');
-          navigate('/');
-        } else {
-          alert(data.message);
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('Failed to login.');
-      });
-      return;
-    } else {
-      fetch('/api/auth/customer-signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert('Customer created successfully!');
-          navigate('/');
-        } else {
-          alert(data.message);
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('Failed to create customer.');
-      });
-    }
+    // Check if email already exists in the database
+    connection.query('SELECT * FROM Customers WHERE Email = ?', [formData.email], (err, results) => {
+      if (err) return res.status(500).json({ message: 'Database error.' });
+      if (results.length > 0) {
+        return res.status(409).json({ message: 'Email already exists.' });
+      }
+    });
+    //
+    console.log('Submitted:', formData)
+    // Create a new customer entry in the database in the Customer Table
+    connection.query('INSERT INTO Customers (Email, Password, FirstName, LastName, BuildingNum, Street, AptName, City, State, Zip, PassportNum, PassportExpiration, PassportCountry, DateOfBirth, PhoneNumber) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [formData.email, formData.password, formData.firstName, formData.lastName, formData.buildingNum, formData.street, formData.aptName, formData.city, formData.state, formData.zip, formData.passportNum, formData.passportExpiration, formData.passportCountry, formData.dateOfBirth, formData.phoneNumber], (err, results) => {
+      if (err) return res.status(500).json({ message: 'Database error.' });
+      res.status(201).json({ message: 'Customer created successfully.' });
+    });
   };
 
   

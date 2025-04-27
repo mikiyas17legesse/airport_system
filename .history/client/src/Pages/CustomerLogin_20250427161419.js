@@ -27,7 +27,7 @@ const CustomerLogin = () => {
     }
     // Call the sign up endpoint which handles db querying
     if (isLogin) {
-      fetch('/api/auth/customer-login', {
+      fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -49,7 +49,7 @@ const CustomerLogin = () => {
       });
       return;
     } else {
-      fetch('/api/auth/customer-signup', {
+      fetch('/api/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

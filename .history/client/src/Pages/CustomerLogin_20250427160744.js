@@ -25,51 +25,28 @@ const CustomerLogin = () => {
       alert("Passwords do not match");
       return;
     }
+    // console.log('Submitted:', formData)
     // Call the sign up endpoint which handles db querying
-    if (isLogin) {
-      fetch('/api/auth/customer-login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert('Login successful.');
-          navigate('/');
-        } else {
-          alert(data.message);
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('Failed to login.');
-      });
-      return;
-    } else {
-      fetch('/api/auth/customer-signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert('Customer created successfully!');
-          navigate('/');
-        } else {
-          alert(data.message);
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('Failed to create customer.');
-      });
-    }
+    fetch('/api/auth/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert('Customer created successfully!');
+        navigate('/');
+      } else {
+        alert(data.message);
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Failed to create customer.');
+    });
   };
 
   

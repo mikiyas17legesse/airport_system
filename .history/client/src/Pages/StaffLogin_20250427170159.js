@@ -26,7 +26,9 @@ const StaffLogin = () => {
       alert("Passwords do not match!");
       return;
     }
-    if (!isLogin) {
+    if (isLogin){
+      // fetch('/api/auth/staff-login')
+    } else {
       fetch('/api/auth/staff-signup', {
         method: 'POST',
         headers: {
