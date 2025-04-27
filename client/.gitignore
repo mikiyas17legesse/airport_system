@@ -7,6 +7,10 @@
 
 # testing
 /coverage
+<<<<<<< HEAD
+=======
+.history
+>>>>>>> fc95099de19b9e1442be7886f9a962f69908c558
 
 # production
 /build

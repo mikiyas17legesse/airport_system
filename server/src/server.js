@@ -1,12 +1,18 @@
 const express = require('express');
+<<<<<<< HEAD
 const cors = require('cors');
 const helmet = require('helmet');
 const mysql = require('mysql2');
 const bcrypt = require('bcryptjs');
+=======
+const connection = require('./db/database'); 
+const authRoute = require('./routes/authRoutes');
+>>>>>>> fc95099de19b9e1442be7886f9a962f69908c558
 
 const app = express();
 const PORT = 5001;
 
+<<<<<<< HEAD
 
 app.use(helmet());
 app.use(cors({
@@ -105,3 +111,13 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
+=======
+app.use(express.json());
+app.use('/api/auth', authRoute);
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
+
+>>>>>>> fc95099de19b9e1442be7886f9a962f69908c558
