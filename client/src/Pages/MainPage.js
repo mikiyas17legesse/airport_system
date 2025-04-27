@@ -6,6 +6,7 @@ const MainPage = () => {
     const navigate = useNavigate();
     const handleStaffClick = () => { navigate('/staff-login'); };
     const handleCustomerClick = () => { navigate('/customer-login'); };
+    const hanfleGuestClick = () => {navigate('/guest-page'); };
 
   return (
     <div className="main-page">
@@ -19,7 +20,16 @@ const MainPage = () => {
           >
             Staff
           </button>
-          <button 
+
+          <button
+          className="role-button Guest-button"
+          onClick={hanfleGuestClick}
+          >
+            Guest
+          </button>
+
+          <button
+
           className="role-button customer-button"
           onClick={handleCustomerClick}
           >
