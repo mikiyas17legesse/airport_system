@@ -7,7 +7,7 @@ const bcrypt = require('bcryptjs');
 const app = express();
 const PORT = 5001;
 
-// ✅ Middlewares
+
 app.use(helmet());
 app.use(cors({
   origin: 'http://localhost:3000',
@@ -15,7 +15,7 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// ✅ MySQL Connection
+//  MySQL Connection
 const db = mysql.createConnection({
   user: 'root',
   password: 'root',
@@ -23,7 +23,7 @@ const db = mysql.createConnection({
   socketPath: '/Applications/MAMP/tmp/mysql/mysql.sock'
 });
 
-// ✅ Test Route
+// Test Route
 app.get('/', (req, res) => {
   res.json({ message: 'Server is up and running! 🚀' });
 });
@@ -55,7 +55,7 @@ app.post('/api/customer/signup', async (req, res) => {
 });
 
 
-// ✅ Customer Login
+// Customer Login
 app.post('/api/customer/login', (req, res) => {
   const { email, password } = req.body;
 
@@ -95,13 +95,13 @@ app.post('/api/customer/login', (req, res) => {
   );
 });
 
-// ✅ Global Error Handler
+// Global Error Handler
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err.stack);
   res.status(500).json({ success: false, message: 'Something broke!', error: err.message });
 });
 
-// ✅ Start Server
+// Start Server
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
