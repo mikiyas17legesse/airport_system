@@ -2,11 +2,10 @@
 const mysql = require('mysql');
 
 const dbConfig = {
-  host: 'localhost',
   user: 'root',
   password: 'root',
-  database: 'airport_system',
-  port: '8889'
+  database: 'airline_database',
+  socketPath: '/Applications/MAMP/tmp/mysql/mysql.sock'
 };
 
 let connection;
@@ -37,5 +36,5 @@ function handleDbConnection() {
 // Start connection immediately
 handleDbConnection();
 
-// Export connection so other files can use it
+// Export the connection to use elsewhere
 module.exports = connection;

@@ -30,13 +30,8 @@ h2 {
 }
 
 input {
-<<<<<<< HEAD
-  width: 100%;
-  padding: 0.8rem;
-=======
   width: 95%;
   padding: 0.5rem;
->>>>>>> fc95099de19b9e1442be7886f9a962f69908c558
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 1rem;
