@@ -37,6 +37,7 @@ authRoute.post('/customer-signup', async (req, res) => {
 });
 
 // Customer Login endpoint
+// Expects: { username, password }
 authRoute.post('/customer-login', (req, res) => {
     console.log('Received login request:', req.body);
     const { email, password } = req.body;
@@ -53,6 +54,7 @@ authRoute.post('/customer-login', (req, res) => {
 });
 
 // Staff Signup endpoint
+// Expects: { username, password, ... } 
 authRoute.post('/staff-signup', (req, res) => {
     const {
         username, firstName, lastName,
@@ -63,6 +65,10 @@ authRoute.post('/staff-signup', (req, res) => {
     if (!username || !password || !email || !phoneNumber || !dateOfBirth || !airlineName || !firstName || !lastName || !confirmPassword) {
         return res.status(400).json({ message: 'All fields are required.' });
     }
+    if (password !== confirmPassword) {
+        return res.status(400).json({ message: 'Passwords do not match.' });
+    }
+
     // Check if staff exists
     connection.query('SELECT * FROM Airline_Staff WHERE Username = ?', [username], (err, results) => {
         if (err) return res.status(500).json({ message: 'Database error.' });
@@ -70,10 +76,12 @@ authRoute.post('/staff-signup', (req, res) => {
             return res.status(409).json({ message: 'Username already exists.' });
         }
 
+        // 2. Check if airline exists
         connection.query('SELECT * FROM Airline WHERE Name = ?', [airlineName], (err, airlineResults) => {
             if (err) return res.status(500).json({ message: 'Database error.' });
 
             const proceedWithStaffInsert = () => {
+                // 3. Insert into Airline_Staff
                 connection.query(
                     'INSERT INTO Airline_Staff (Username, Password, First_Name, Last_Name, Date_Of_Birth, Airline_Name) VALUES (?, ?, ?, ?, ?, ?)',
                     [username, password, firstName, lastName, dateOfBirth, airlineName],
@@ -82,11 +90,13 @@ authRoute.post('/staff-signup', (req, res) => {
                             console.log('DB error:', err);
                             return res.status(500).json({ message: 'Database error.' });
                         }
+                        // Insert into Airline_Staff_Email
                         connection.query(
                             'INSERT INTO Airline_Staff_Email (Username, Email) VALUES (?, ?)',
                             [username, email],
                             (err, results) => {
                                 if (err) return res.status(500).json({ message: 'Database error.' });
+                                // Insert into Airline_Staff_Phone
                                 connection.query(
                                     'INSERT INTO Airline_Staff_Phone (Username, Phone_Number) VALUES (?, ?)',
                                     [username, phoneNumber],
@@ -111,21 +121,6 @@ authRoute.post('/staff-signup', (req, res) => {
                 proceedWithStaffInsert();
             }
         });
-    });
-});
-
-// Staff Login endpoint
-authRoute.post('/staff-login', (req, res) => {
-    const { username, password } = req.body;
-    if (!username || !password) {
-        return res.status(400).json({ message: 'Username and password are required.' });
-    }
-    connection.query('SELECT * FROM Airline_Staff WHERE Username = ? AND Password = ?', [username, password], (err, results) => {
-        if (err) return res.status(500).json({ message: 'Database error.' });
-        if (results.length === 0) {
-            return res.status(401).json({ message: 'Invalid credentials.' });
-        }
-        res.status(200).json({ message: 'Login successful.' });
     });
 });
 
