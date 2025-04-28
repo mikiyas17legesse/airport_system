@@ -36,6 +36,7 @@ const CustomerLogin = () => {
       })
       .then(response => response.json())
       .then(data => {
+        console.log("Login response: ", data)
         if (data.success) {
           navigate('/home');
         } else {

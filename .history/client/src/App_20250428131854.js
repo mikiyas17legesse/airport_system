@@ -4,9 +4,7 @@ import MainPage from './pages/MainPage';
 import StaffLogin from './pages/StaffLogin';
 import CustomerLogin from './pages/CustomerLogin';
 import HomePage from './pages/HomePage';
-import SearchFlights from './pages/customerPages/SearchFlights'
-import Ratings from './pages/customerPages/Ratings'
-import Bookings from './pages/customerPages/Bookings'
+import NavigationBar from './pages/components/Navbar';
 
 function App() {
   return (
@@ -17,9 +15,7 @@ function App() {
           <Route path="/customer-login" element={<CustomerLogin />} />
           <Route path="/staff-login" element={<StaffLogin />} />
           <Route path="/home" element={<HomePage />} />
-          <Route path="/search-flights" element={<SearchFlights />} />
-          <Route path="/submit-ratings" element={<Ratings />} />
-          <Route path="/book-flights" element={<Bookings />} />
+          <Route path="/navbar" element={<NavigationBar />} />
         </Routes>
       </div>
     </BrowserRouter>
