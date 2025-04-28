@@ -26,6 +26,11 @@ const StaffLogin = () => {
       alert("Passwords do not match!");
       return;
     }
+    // Check that none of the fields are empty
+    if (!formData.username || !formData.firstName || !formData.lastName || !formData.password || !formData.confirmPassword || !formData.email || !formData.phoneNumber || !formData.dateOfBirth || !formData.airlineName) {
+      alert("All fields are required!");
+      return;
+    }
     if (!isLogin) {
       fetch('/api/auth/staff-signup', {
         method: 'POST',

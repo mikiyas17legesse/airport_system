@@ -37,6 +37,7 @@ authRoute.post('/customer-signup', async (req, res) => {
 });
 
 // Customer Login endpoint
+// Expects: { username, password }
 authRoute.post('/customer-login', (req, res) => {
     console.log('Received login request:', req.body);
     const { email, password } = req.body;
@@ -53,6 +54,7 @@ authRoute.post('/customer-login', (req, res) => {
 });
 
 // Staff Signup endpoint
+// Expects: { username, password, ... } 
 authRoute.post('/staff-signup', (req, res) => {
     const {
         username, firstName, lastName,
@@ -63,6 +65,7 @@ authRoute.post('/staff-signup', (req, res) => {
     if (!username || !password || !email || !phoneNumber || !dateOfBirth || !airlineName || !firstName || !lastName || !confirmPassword) {
         return res.status(400).json({ message: 'All fields are required.' });
     }
+
     // Check if staff exists
     connection.query('SELECT * FROM Airline_Staff WHERE Username = ?', [username], (err, results) => {
         if (err) return res.status(500).json({ message: 'Database error.' });
@@ -114,7 +117,6 @@ authRoute.post('/staff-signup', (req, res) => {
     });
 });
 
-// Staff Login endpoint
 authRoute.post('/staff-login', (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) {

@@ -14,10 +14,7 @@ authRoute.post('/customer-signup', async (req, res) => {
         passportNum, passportExpiration, passportCountry,
         dateOfBirth
     } = req.body;
-    // Checks if all fields are provided
-    if (!email || !firstName || !lastName || !password || !buildingNum || !street || !city || !state || !zip || !passportNum || !passportExpiration || !passportCountry || !dateOfBirth) {
-        return res.status(400).json({ message: 'All fields are required.' });
-    }
+    
     // Check if user exists
     connection.query('SELECT * FROM Customer WHERE Email = ?', [email], (err, results) => {
         if (err) return res.status(500).json({ message: 'Database error.' });
@@ -37,6 +34,7 @@ authRoute.post('/customer-signup', async (req, res) => {
 });
 
 // Customer Login endpoint
+// Expects: { username, password }
 authRoute.post('/customer-login', (req, res) => {
     console.log('Received login request:', req.body);
     const { email, password } = req.body;
@@ -53,6 +51,7 @@ authRoute.post('/customer-login', (req, res) => {
 });
 
 // Staff Signup endpoint
+// Expects: { username, password, ... } 
 authRoute.post('/staff-signup', (req, res) => {
     const {
         username, firstName, lastName,
@@ -114,7 +113,6 @@ authRoute.post('/staff-signup', (req, res) => {
     });
 });
 
-// Staff Login endpoint
 authRoute.post('/staff-login', (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) {
