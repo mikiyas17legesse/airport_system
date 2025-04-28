@@ -6,7 +6,6 @@ import CustomerLogin from './pages/CustomerLogin';
 import HomePage from './pages/HomePage';
 import SearchFlights from './pages/customerPages/SearchFlights'
 import Ratings from './pages/customerPages/Ratings'
-import Bookings from './pages/customerPages/Bookings'
 
 function App() {
   return (

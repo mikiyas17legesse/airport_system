@@ -2,7 +2,9 @@ import React from 'react';
 import './HomePage.css';
 import NavigationBar from './components/Navbar';
 
-const HomePage = () => {
+const HomePage = ({ userType }) => {
+  // User type would be passed after login (either 'customer' or 'staff')
+  const isStaff = userType === 'staff';
 
   return (
     <div className="dashboard-container">

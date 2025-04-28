@@ -37,6 +37,7 @@ const CustomerLogin = () => {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
+          // alert('Login successful.');
           navigate('/home');
         } else {
           alert(data.message);
