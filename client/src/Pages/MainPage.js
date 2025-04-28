@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import PublicFlightSearch from './PublicFlightSearch';
 import './MainPage.css';
 
 const MainPage = () => {
@@ -11,6 +12,13 @@ const MainPage = () => {
     <div className="main-page">
       <div className="main-content">
         <h1>Welcome to Airline Management System</h1>
+        
+        {/* Public Flight Search Section */}
+        <div className="public-search-section">
+          <h2>Search Flights</h2>
+          <PublicFlightSearch />
+        </div>
+        
         <p className="subtitle">Please select your role to continue</p>
         <div className="button-container">
           <button 

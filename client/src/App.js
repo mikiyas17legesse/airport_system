@@ -25,6 +25,9 @@ import ViewFlights from './pages/StaffPages/ViewFlights';
 import ViewRatings from './pages/StaffPages/ViewRatings';
 import ViewReports from './pages/StaffPages/ViewReports';
 
+// Public pages
+import PublicFlightSearch from './pages/PublicFlightSearch';
+
 function App() {
   return (
     <BrowserRouter>
@@ -33,6 +36,7 @@ function App() {
           {/* General Routes */}
           <Route path="/goodbye" element={<Goodbye />} />
           <Route path="/" element={<MainPage />} />
+          <Route path="/public-flights" element={<PublicFlightSearch />} />
           <Route path="/customer-login" element={<CustomerLogin />} />
           <Route path="/staff-login" element={<StaffLogin />} />
           <Route path="/home" element={<HomePage />} />
@@ -51,6 +55,9 @@ function App() {
           <Route path="/view-flights" element={<ViewFlights />} />
           <Route path="/view-flight-ratings" element={<ViewRatings />} />
           <Route path="/view-reports" element={<ViewReports />} />
+          <Route path="/search-flights" element={<SearchFlights />} />
+          <Route path="/submit-ratings" element={<Ratings />} />
+          <Route path="/book-flights" element={<Bookings />} />
         </Routes>
       </div>
     </BrowserRouter>

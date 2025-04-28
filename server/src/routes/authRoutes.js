@@ -5,8 +5,6 @@ const connection = require('../db/database.js');
 // Customer Signup endpoint
 // Expects: { username, password, ... }
 authRoute.post('/customer-signup', async (req, res) => {
-    
-    console.log('Received signup request:', req.body);
     const {
         email, firstName, lastName,
         password, confirmPassword,
@@ -21,7 +19,20 @@ authRoute.post('/customer-signup', async (req, res) => {
     }
     // Check if user exists
     connection.query('SELECT * FROM Customer WHERE Email = ?', [email], (err, results) => {
-        if (err) return res.status(500).json({ message: 'Database error.' });
+        if (err) {
+            console.error('MySQL Error Details:', {
+                code: err.code,
+                errno: err.errno,
+                sqlMessage: err.sqlMessage,
+                sqlState: err.sqlState,
+                sql: err.sql
+            });
+            return res.status(500).json({ 
+                success: false,
+                message: 'Database operation failed',
+                details: process.env.NODE_ENV === 'development' ? err.message : undefined
+            });
+        }
         if (results.length > 0) {
             return res.status(409).json({ message: 'Email already exists.' });
         }
@@ -30,7 +41,20 @@ authRoute.post('/customer-signup', async (req, res) => {
             'INSERT INTO Customer (Email, First_Name, Last_Name, Password, Building_Num, Street, City, State, Zip, Passport_Num, Passport_Exp, Passport_Country, Date_Of_Birth) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
             [email, firstName, lastName, password, buildingNum, street, city, state, zip, passportNum, passportExpiration, passportCountry, dateOfBirth],
             (err, results) => {
-                if (err) return res.status(500).json({ message: 'Database error.' });
+                if (err) {
+                    console.error('MySQL Error Details:', {
+                        code: err.code,
+                        errno: err.errno,
+                        sqlMessage: err.sqlMessage,
+                        sqlState: err.sqlState,
+                        sql: err.sql
+                    });
+                    return res.status(500).json({ 
+                        success: false,
+                        message: 'Database operation failed',
+                        details: process.env.NODE_ENV === 'development' ? err.message : undefined
+                    });
+                }
                 console.log('User created successfully.');
             }
         );
@@ -39,32 +63,31 @@ authRoute.post('/customer-signup', async (req, res) => {
 
 // Customer Login endpoint
 authRoute.post('/customer-login', (req, res) => {
-    console.log('Received login request:', req.body);
     const { email, password } = req.body;
-    
     if (!email || !password) {
-        return res.status(400).json({ success: false, message: 'Email and password are required.' });
+        return res.status(400).json({ message: 'Email and password are required.' });
     }
-    
-    connection.query(
-        'SELECT * FROM customer WHERE Email = ? AND Password = ?',
-        [email, password],
-        (err, results) => {
-            if (err) {
-                console.error('Database error:', err);
-                return res.status(500).json({ success: false, message: 'Database error.' });
-            }
-
-            if (results.length === 0) {
-                return res.status(401).json({ success: false, message: 'Invalid credentials.' });
-            }
-
-            console.log('Login successful for user:', email);
-            return res.status(200).json({ success: true, message: 'Login successful.' });
+    connection.query('SELECT * FROM Customer WHERE Email = ? AND Password = ?', [email, password], (err, results) => {
+        if (err) {
+            console.error('MySQL Error Details:', {
+                code: err.code,
+                errno: err.errno,
+                sqlMessage: err.sqlMessage,
+                sqlState: err.sqlState,
+                sql: err.sql
+            });
+            return res.status(500).json({ 
+                success: false,
+                message: 'Database operation failed',
+                details: process.env.NODE_ENV === 'development' ? err.message : undefined
+            });
         }
-    );
+        if (results.length === 0) {
+            return res.status(401).json({ success: false, message: 'Invalid credentials.' });
+        }
+        res.status(200).json({ success: true, message: 'Login successful.' });
+    });
 });
-
 
 // Staff Signup endpoint
 authRoute.post('/staff-signup', (req, res) => {
@@ -79,13 +102,39 @@ authRoute.post('/staff-signup', (req, res) => {
     }
     // Check if staff exists
     connection.query('SELECT * FROM Airline_Staff WHERE Username = ?', [username], (err, results) => {
-        if (err) return res.status(500).json({ message: 'Database error.' });
+        if (err) {
+            console.error('MySQL Error Details:', {
+                code: err.code,
+                errno: err.errno,
+                sqlMessage: err.sqlMessage,
+                sqlState: err.sqlState,
+                sql: err.sql
+            });
+            return res.status(500).json({ 
+                success: false,
+                message: 'Database operation failed',
+                details: process.env.NODE_ENV === 'development' ? err.message : undefined
+            });
+        }
         if (results.length > 0) {
             return res.status(409).json({ message: 'Username already exists.' });
         }
 
         connection.query('SELECT * FROM Airline WHERE Name = ?', [airlineName], (err, airlineResults) => {
-            if (err) return res.status(500).json({ message: 'Database error.' });
+            if (err) {
+                console.error('MySQL Error Details:', {
+                    code: err.code,
+                    errno: err.errno,
+                    sqlMessage: err.sqlMessage,
+                    sqlState: err.sqlState,
+                    sql: err.sql
+                });
+                return res.status(500).json({ 
+                    success: false,
+                    message: 'Database operation failed',
+                    details: process.env.NODE_ENV === 'development' ? err.message : undefined
+                });
+            }
 
             const proceedWithStaffInsert = () => {
                 connection.query(
@@ -93,20 +142,55 @@ authRoute.post('/staff-signup', (req, res) => {
                     [username, password, firstName, lastName, dateOfBirth, airlineName],
                     (err, results) => {
                         if (err) {
-                            console.log('DB error:', err);
-                            return res.status(500).json({ message: 'Database error.' });
+                            console.error('MySQL Error Details:', {
+                                code: err.code,
+                                errno: err.errno,
+                                sqlMessage: err.sqlMessage,
+                                sqlState: err.sqlState,
+                                sql: err.sql
+                            });
+                            return res.status(500).json({ 
+                                success: false,
+                                message: 'Database operation failed',
+                                details: process.env.NODE_ENV === 'development' ? err.message : undefined
+                            });
                         }
                         connection.query(
                             'INSERT INTO Airline_Staff_Email (Username, Email) VALUES (?, ?)',
                             [username, email],
                             (err, results) => {
-                                if (err) return res.status(500).json({ message: 'Database error.' });
+                                if (err) {
+                                    console.error('MySQL Error Details:', {
+                                        code: err.code,
+                                        errno: err.errno,
+                                        sqlMessage: err.sqlMessage,
+                                        sqlState: err.sqlState,
+                                        sql: err.sql
+                                    });
+                                    return res.status(500).json({ 
+                                        success: false,
+                                        message: 'Database operation failed',
+                                        details: process.env.NODE_ENV === 'development' ? err.message : undefined
+                                    });
+                                }
                                 connection.query(
                                     'INSERT INTO Airline_Staff_Phone (Username, Phone_Number) VALUES (?, ?)',
                                     [username, phoneNumber],
                                     (err, results) => {
-                                        if (err) return res.status(500).json({ message: 'Database error.' });
-                                        // Success!
+                                        if (err) {
+                                            console.error('MySQL Error Details:', {
+                                                code: err.code,
+                                                errno: err.errno,
+                                                sqlMessage: err.sqlMessage,
+                                                sqlState: err.sqlState,
+                                                sql: err.sql
+                                            });
+                                            return res.status(500).json({ 
+                                                success: false,
+                                                message: 'Database operation failed',
+                                                details: process.env.NODE_ENV === 'development' ? err.message : undefined
+                                            });
+                                        }
                                         return res.status(201).json({ success: true, message: 'Staff account created successfully.' });
                                     }
                                 );
@@ -118,7 +202,20 @@ authRoute.post('/staff-signup', (req, res) => {
 
             if (airlineResults.length === 0) {
                 connection.query('INSERT INTO Airline (Name) VALUES (?)', [airlineName], (err, insertResults) => {
-                    if (err) return res.status(500).json({ message: 'Database error.' });
+                    if (err) {
+                        console.error('MySQL Error Details:', {
+                            code: err.code,
+                            errno: err.errno,
+                            sqlMessage: err.sqlMessage,
+                            sqlState: err.sqlState,
+                            sql: err.sql
+                        });
+                        return res.status(500).json({ 
+                            success: false,
+                            message: 'Database operation failed',
+                            details: process.env.NODE_ENV === 'development' ? err.message : undefined
+                        });
+                    }
                     proceedWithStaffInsert();
                 });
             } else {
@@ -135,25 +232,29 @@ authRoute.post('/staff-login', (req, res) => {
         return res.status(400).json({ message: 'Username and password are required.' });
     }
     connection.query('SELECT * FROM Airline_Staff WHERE Username = ? AND Password = ?', [username, password], (err, results) => {
-        if (err) return res.status(500).json({ message: 'Database error.' });
+        if (err) {
+            console.error('MySQL Error Details:', {
+                code: err.code,
+                errno: err.errno,
+                sqlMessage: err.sqlMessage,
+                sqlState: err.sqlState,
+                sql: err.sql
+            });
+            return res.status(500).json({ 
+                success: false,
+                message: 'Database operation failed',
+                details: process.env.NODE_ENV === 'development' ? err.message : undefined
+            });
+        }
         if (results.length === 0) {
             return res.status(401).json({ message: 'Invalid credentials.' });
         }
-        res.status(200).json({ message: 'Login successful.' });
+        res.status(200).json({ 
+            success: true, 
+            message: 'Login successful.',
+            redirectTo: '/staff-home'
+        }); 
     });
 });
-
-// Logout Route
-authRoute.post('/logout', (req, res) => {
-    req.session.destroy((err) => {
-      if (err) {
-        console.error('Logout failed:', err);
-        return res.status(500).send('Error logging out.');
-      }
-      res.clearCookie('connect.sid'); // If using express-session
-      res.send('Logged out successfully');
-    });
-  });
-  
 
 module.exports = authRoute;
