@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import NavigationBar from '../components/Navbar';
-import './Ratings.css';
 
 const mockFlights = [
   {
@@ -33,9 +32,9 @@ const Ratings = () => {
     setComments(prev => ({ ...prev, [flightId]: value }));
   };
 
+  // No API call; just simulate submit
   const handleSubmit = (flightId) => {
     setStatus(prev => ({ ...prev, [flightId]: "Submitted!" }));
-    console.log("Passed onto the backend:", ratings, comments);
   };
 
   return (
@@ -51,31 +50,30 @@ const Ratings = () => {
               <strong>Flight:</strong> {flight.flightNumber} | <strong>Date:</strong> {flight.date} | <strong>From:</strong> {flight.from} | <strong>To:</strong> {flight.to}
             </div>
             <div>
-              <label className="rating-label">
+              <label>
                 Rating:
                 <select
-                  className="rating-select"
                   value={ratings[flight.id] || ""}
                   onChange={e => handleRatingChange(flight.id, e.target.value)}
                 >
-                  <option value=""></option>
+                  <option value="">    </option>
                   {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
                 </select>
               </label>
             </div>
             <div>
-              <label className="comment-label">
+              <label>
                 Comment:
                 <input
-                  className="comment-input"
                   type="text"
                   value={comments[flight.id] || ""}
                   onChange={e => handleCommentChange(flight.id, e.target.value)}
                   placeholder="Write your comment"
+                  style={{ width: "60%" }}
                 />
               </label>
             </div>
-            <button className="rating-submit-btn" onClick={() => handleSubmit(flight.id)}>Submit</button>
+            <button onClick={() => handleSubmit(flight.id)}>Submit</button>
             {status[flight.id] && <span style={{ marginLeft: 10 }}>{status[flight.id]}</span>}
           </div>
         ))

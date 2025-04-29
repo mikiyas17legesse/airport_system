@@ -1,41 +1,47 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import NavigationBar from '../components/Navbar';
-import './Ratings.css';
-
-const mockFlights = [
-  {
-    id: 1,
-    flightNumber: 'AA123',
-    date: '2025-03-15',
-    from: 'JFK',
-    to: 'LAX'
-  },
-  {
-    id: 2,
-    flightNumber: 'DL456',
-    date: '2025-04-01',
-    from: 'LAX',
-    to: 'ORD'
-  }
-];
 
 const Ratings = () => {
-  const [flights] = useState(mockFlights);
+  const [flights, setFlights] = useState([]);
   const [ratings, setRatings] = useState({});
   const [comments, setComments] = useState({});
   const [status, setStatus] = useState({});
 
+  // Fetch past flights on mount
+  useEffect(() => {
+    fetch('/api/customer/past-flights')
+      .then(res => res.json())
+      .then(data => setFlights(data.flights || []))
+      .catch(() => setFlights([]));
+  }, []);
+
+  // Handle rating change
   const handleRatingChange = (flightId, value) => {
     setRatings(prev => ({ ...prev, [flightId]: value }));
   };
 
+  // Handle comment change
   const handleCommentChange = (flightId, value) => {
     setComments(prev => ({ ...prev, [flightId]: value }));
   };
 
+  // Submit rating and comment for a flight
   const handleSubmit = (flightId) => {
-    setStatus(prev => ({ ...prev, [flightId]: "Submitted!" }));
-    console.log("Passed onto the backend:", ratings, comments);
+    // console.log(flightId);
+    fetch('/api/customer/submit-rating', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        flightId,
+        rating: ratings[flightId],
+        comment: comments[flightId]
+      })
+    })
+      .then(res => res.json())
+      .then(data => {
+        setStatus(prev => ({ ...prev, [flightId]: data.success ? "Submitted!" : "Failed to submit" }));
+      })
+      .catch(() => setStatus(prev => ({ ...prev, [flightId]: "Failed to submit" })));
   };
 
   return (
@@ -51,31 +57,30 @@ const Ratings = () => {
               <strong>Flight:</strong> {flight.flightNumber} | <strong>Date:</strong> {flight.date} | <strong>From:</strong> {flight.from} | <strong>To:</strong> {flight.to}
             </div>
             <div>
-              <label className="rating-label">
+              <label>
                 Rating:
                 <select
-                  className="rating-select"
                   value={ratings[flight.id] || ""}
                   onChange={e => handleRatingChange(flight.id, e.target.value)}
                 >
-                  <option value=""></option>
+                  <option value="">Select</option>
                   {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
                 </select>
               </label>
             </div>
             <div>
-              <label className="comment-label">
+              <label>
                 Comment:
                 <input
-                  className="comment-input"
                   type="text"
                   value={comments[flight.id] || ""}
                   onChange={e => handleCommentChange(flight.id, e.target.value)}
                   placeholder="Write your comment"
+                  style={{ width: "60%" }}
                 />
               </label>
             </div>
-            <button className="rating-submit-btn" onClick={() => handleSubmit(flight.id)}>Submit</button>
+            <button onClick={() => handleSubmit(flight.id)}>Submit</button>
             {status[flight.id] && <span style={{ marginLeft: 10 }}>{status[flight.id]}</span>}
           </div>
         ))

@@ -45,11 +45,13 @@ const SearchFlights = () => {
   const [returnDate, setReturnDate] = useState("");
   const [results, setResults] = useState([]);
 
+  // Use this in place of a real API call for now
   const handleSearch = (e) => {
     e.preventDefault();
     setResults(mockFlights);
   };
 
+  // Placeholder for submit handler
   const handleSubmit = (e) => {
     e.preventDefault();
     // Pass these values to backend endpoint later
@@ -61,7 +63,7 @@ const SearchFlights = () => {
       returnDate: tripType === "roundtrip" ? returnDate : null,
     };
     console.log("Search params:", searchParams);
-    // Pass searchParams to backend
+    // TODO: Pass searchParams to backend
   };
 
 
@@ -140,6 +142,7 @@ const SearchFlights = () => {
           </button>
         </form>
       </div>
+      {/* Display mock search results */}
       <div style={{ maxWidth: 800, margin: '2rem auto', padding: 24 }}>
         {results.length > 0 && (
           <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 24 }}>

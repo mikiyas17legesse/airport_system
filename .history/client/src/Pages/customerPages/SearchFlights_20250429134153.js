@@ -43,13 +43,9 @@ const SearchFlights = () => {
   const [destination, setDestination] = useState("");
   const [departureDate, setDepartureDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
-  const [results, setResults] = useState([]);
+  const [flights, setFlights] = useState(mockFlights);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setResults(mockFlights);
-  };
-
+  // Placeholder for submit handler
   const handleSubmit = (e) => {
     e.preventDefault();
     // Pass these values to backend endpoint later
@@ -61,16 +57,15 @@ const SearchFlights = () => {
       returnDate: tripType === "roundtrip" ? returnDate : null,
     };
     console.log("Search params:", searchParams);
-    // Pass searchParams to backend
+    // TODO: Pass searchParams to backend
   };
-
 
   return (
     <div>
       <NavigationBar />
       <div style={{ maxWidth: 500, margin: "2rem auto", padding: 24, background: "#fff", borderRadius: 8, boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}>
         <h2 style={{ textAlign: "center", marginBottom: 24 }}>Search Flights</h2>
-        <form onSubmit={handleSearch}>
+        <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: 16 }}>
             <label style={{ marginRight: 16 }}>
               <input
@@ -139,38 +134,6 @@ const SearchFlights = () => {
             Search Flights
           </button>
         </form>
-      </div>
-      <div style={{ maxWidth: 800, margin: '2rem auto', padding: 24 }}>
-        {results.length > 0 && (
-          <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 24 }}>
-            <thead>
-              <tr style={{ background: '#f5f5f5' }}>
-                <th style={{ padding: 8, border: '1px solid #ddd' }}>Flight No.</th>
-                <th style={{ padding: 8, border: '1px solid #ddd' }}>Airline</th>
-                <th style={{ padding: 8, border: '1px solid #ddd' }}>From</th>
-                <th style={{ padding: 8, border: '1px solid #ddd' }}>To</th>
-                <th style={{ padding: 8, border: '1px solid #ddd' }}>Departure</th>
-                <th style={{ padding: 8, border: '1px solid #ddd' }}>Arrival</th>
-                <th style={{ padding: 8, border: '1px solid #ddd' }}>Price ($)</th>
-                <th style={{ padding: 8, border: '1px solid #ddd' }}>Seats</th>
-              </tr>
-            </thead>
-            <tbody>
-              {results.map(flight => (
-                <tr key={flight.id}>
-                  <td style={{ padding: 8, border: '1px solid #ddd' }}>{flight.flightNumber}</td>
-                  <td style={{ padding: 8, border: '1px solid #ddd' }}>{flight.airline}</td>
-                  <td style={{ padding: 8, border: '1px solid #ddd' }}>{flight.departure}</td>
-                  <td style={{ padding: 8, border: '1px solid #ddd' }}>{flight.arrival}</td>
-                  <td style={{ padding: 8, border: '1px solid #ddd' }}>{new Date(flight.departureTime).toLocaleString()}</td>
-                  <td style={{ padding: 8, border: '1px solid #ddd' }}>{new Date(flight.arrivalTime).toLocaleString()}</td>
-                  <td style={{ padding: 8, border: '1px solid #ddd' }}>{flight.price}</td>
-                  <td style={{ padding: 8, border: '1px solid #ddd' }}>{flight.seatsAvailable}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
       </div>
     </div>
   );

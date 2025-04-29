@@ -177,20 +177,7 @@ authRoute.post('/staff-signup', (req, res) => {
                                     'INSERT INTO Airline_Staff_Phone (Username, Phone_Number) VALUES (?, ?)',
                                     [username, phoneNumber],
                                     (err, results) => {
-                                        if (err) {
-                                            console.error('MySQL Error Details:', {
-                                                code: err.code,
-                                                errno: err.errno,
-                                                sqlMessage: err.sqlMessage,
-                                                sqlState: err.sqlState,
-                                                sql: err.sql
-                                            });
-                                            return res.status(500).json({ 
-                                                success: false,
-                                                message: 'Database operation failed',
-                                                details: process.env.NODE_ENV === 'development' ? err.message : undefined
-                                            });
-                                        }
+                                        if (err) return res.status(500).json({ message: 'Database error.' });
                                         return res.status(201).json({ success: true, message: 'Staff account created successfully.' });
                                     }
                                 );

@@ -7,13 +7,16 @@ customerRoute.get('/view-my-flights', async (req, res) => {
 });
 
 customerRoute.get('/past-flights', async (req, res) => {
+    // connection.query('SELECT * FROM Flight WHERE Date < ?', [new Date()], (err, results) => {
+    //     if (err) return res.status(500).json({ message: 'Database error.' });
+    //     res.status(200).json({ flights: results });
+    // });
 });
 
 customerRoute.get('/search-flights', (req, res) => {
     const { tripType, source, destination, departureDate, returnDate } = req.query;
-    if (!tripType || !source || !destination || !departureDate) {
+    if (!tripType || !source || !destination || !departureDate) 
         return res.status(400).json({ message: 'All fields are required.' });
-    }
 
     const outboundFlightQ = 'SELECT * FROM Flight WHERE Source = ? AND Destination = ? AND Date = ?';
     const outboundFlightParams = [source, destination, departureDate];
@@ -32,7 +35,7 @@ customerRoute.get('/search-flights', (req, res) => {
             const returnParams = [destination, source, returnDate];
 
             connection.query(returnQuery, returnParams, (err, returnResults) => {
-                if (err) return res.status(500).json({ message: 'Database error.' });
+                if (err) return res.status(500).json({ message: 'Database error.', error: err });
 
                 returnFlights = returnResults;
                 return res.status(200).json({ outboundFlights, returnFlights });
