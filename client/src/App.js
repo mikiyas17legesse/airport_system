@@ -3,7 +3,10 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import MainPage from './Pages/MainPage';
 import StaffLogin from './Pages/StaffLogin';
 import CustomerLogin from './Pages/CustomerLogin';
-import GuestPage from './Pages/GuestPage';
+import HomePage from './Pages/HomePage';
+import SearchFlights from './Pages/customerPages/SearchFlights'
+import Ratings from './Pages/customerPages/Ratings'
+import Bookings from './Pages/customerPages/Bookings'
 
 function App() {
   return (
@@ -13,7 +16,10 @@ function App() {
           <Route path="/" element={<MainPage />} />
           <Route path="/customer-login" element={<CustomerLogin />} />
           <Route path="/staff-login" element={<StaffLogin />} />
-          <Route path="/guest-page" element={<GuestPage />} />
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/search-flights" element={<SearchFlights />} />
+          <Route path="/submit-ratings" element={<Ratings />} />
+          <Route path="/book-flights" element={<Bookings />} />
         </Routes>
       </div>
     </BrowserRouter>
