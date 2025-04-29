@@ -90,6 +90,7 @@ authRoute.post('/staff-signup', (req, res) => {
                                     [username, phoneNumber],
                                     (err, results) => {
                                         if (err) return res.status(500).json({ message: 'Database error.' });
+                                        // Success!
                                         return res.status(201).json({ success: true, message: 'Staff account created successfully.' });
                                     }
                                 );

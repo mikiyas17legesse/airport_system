@@ -7,6 +7,10 @@ customerRoute.get('/view-my-flights', async (req, res) => {
 });
 
 customerRoute.get('/past-flights', async (req, res) => {
+    // connection.query('SELECT * FROM Flight WHERE Date < ?', [new Date()], (err, results) => {
+    //     if (err) return res.status(500).json({ message: 'Database error.' });
+    //     res.status(200).json({ flights: results });
+    // });
 });
 
 customerRoute.get('/search-flights', (req, res) => {

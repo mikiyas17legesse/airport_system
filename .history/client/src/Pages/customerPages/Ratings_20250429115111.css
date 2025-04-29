@@ -1,0 +1,21 @@
+.rating-label, .comment-label {
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.rating-select {
+  font-size: 1.1rem;
+  padding: 6px 12px;
+  margin-left: 10px;
+  min-width: 100px;
+}
+
+.comment-input {
+  font-size: 1.1rem;
+  padding: 6px 12px;
+  margin-left: 10px;
+  width: 70%;
+  min-width: 250px;
+  max-width: 500px;
+}

@@ -33,6 +33,7 @@ const Ratings = () => {
     setComments(prev => ({ ...prev, [flightId]: value }));
   };
 
+  // No API call; just simulate submit
   const handleSubmit = (flightId) => {
     setStatus(prev => ({ ...prev, [flightId]: "Submitted!" }));
     console.log("Passed onto the backend:", ratings, comments);

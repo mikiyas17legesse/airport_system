@@ -140,6 +140,7 @@ const SearchFlights = () => {
           </button>
         </form>
       </div>
+      {/* Display mock search results */}
       <div style={{ maxWidth: 800, margin: '2rem auto', padding: 24 }}>
         {results.length > 0 && (
           <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 24 }}>
