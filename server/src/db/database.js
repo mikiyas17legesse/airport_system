@@ -4,9 +4,9 @@ const mysql = require('mysql');
 const dbConfig = {
   host: 'localhost',
   user: 'root',
-  password: 'root',
-  database: 'airport_system',
-  port: '8889'
+  password: '',
+  database: 'airline_database',
+  port: '3306'
 };
 
 let connection;
