@@ -7,6 +7,8 @@ const PORT = 5001;
 
 app.use(express.json());
 app.use('/api/auth', authRoute);
+app.use('/api/customerRoutes');
+app.use('/api/staffRoutes');
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
