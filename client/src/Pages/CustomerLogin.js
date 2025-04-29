@@ -29,11 +29,9 @@ const CustomerLogin = () => {
     if (isLogin) {
       fetch('/api/auth/customer-login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
-      })
+      })      
       .then(response => response.json())
       .then(data => {
         if (data.success) {

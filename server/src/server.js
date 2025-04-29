@@ -5,7 +5,7 @@ const staffRoute = require('./routes/staffRoutes');
 
 const app = express();
 
-const PORT = 5001;
+const PORT = 3000;
 
 app.use(express.json());
 app.use('/api/auth', authRoute);

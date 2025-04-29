@@ -38,7 +38,7 @@ const StaffLogin = () => {
       .then(data => {
         if (data.success) {
           alert('Staff created successfully!');
-          navigate('/');
+          navigate('/staff-home');
         } else {
           alert(data.message);
         }
@@ -59,7 +59,7 @@ const StaffLogin = () => {
       .then(data => {
         if (data.success) {
           alert('Login successful.');
-          navigate('/');
+          navigate('/staff-home');
         } else {
           alert(data.message);
         }

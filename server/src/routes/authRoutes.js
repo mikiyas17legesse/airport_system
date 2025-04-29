@@ -41,18 +41,30 @@ authRoute.post('/customer-signup', async (req, res) => {
 authRoute.post('/customer-login', (req, res) => {
     console.log('Received login request:', req.body);
     const { email, password } = req.body;
+    
     if (!email || !password) {
-        return res.status(400).json({ message: 'Email and password are required.' });
+        return res.status(400).json({ success: false, message: 'Email and password are required.' });
     }
     
-    connection.query('SELECT * FROM customer WHERE Email = ? AND Password = ?', [email, password], (err, results) => {
-        if (err) return res.status(500).json({ message: 'Database error.' });
-        if (results.length === 0) {
-            return res.status(401).json({ success: false, message: 'Invalid credentials.' });
+    connection.query(
+        'SELECT * FROM customer WHERE Email = ? AND Password = ?',
+        [email, password],
+        (err, results) => {
+            if (err) {
+                console.error('Database error:', err);
+                return res.status(500).json({ success: false, message: 'Database error.' });
+            }
+
+            if (results.length === 0) {
+                return res.status(401).json({ success: false, message: 'Invalid credentials.' });
+            }
+
+            console.log('Login successful for user:', email);
+            return res.status(200).json({ success: true, message: 'Login successful.' });
         }
-        res.status(200).json({ success: true, message: 'Login successful.' });
-    });
+    );
 });
+
 
 // Staff Signup endpoint
 authRoute.post('/staff-signup', (req, res) => {
