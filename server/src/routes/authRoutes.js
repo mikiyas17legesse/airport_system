@@ -5,7 +5,7 @@ const connection = require('../db/database.js');
 // Customer Signup endpoint
 // Expects: { username, password, ... }
 authRoute.post('/customer-signup', async (req, res) => {
-    console.log("Here");
+    
     console.log('Received signup request:', req.body);
     const {
         email, firstName, lastName,
@@ -44,7 +44,8 @@ authRoute.post('/customer-login', (req, res) => {
     if (!email || !password) {
         return res.status(400).json({ message: 'Email and password are required.' });
     }
-    connection.query('SELECT * FROM Customer WHERE Email = ? AND Password = ?', [email, password], (err, results) => {
+    
+    connection.query('SELECT * FROM customer WHERE Email = ? AND Password = ?', [email, password], (err, results) => {
         if (err) return res.status(500).json({ message: 'Database error.' });
         if (results.length === 0) {
             return res.status(401).json({ success: false, message: 'Invalid credentials.' });

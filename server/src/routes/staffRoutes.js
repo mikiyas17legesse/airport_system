@@ -1,41 +1,46 @@
 const express = require('express');
 const staffRoute = express.Router();
-const connection = require('../../server/src/db/database.js'); // adjust path if needed
+const connection = require('../db/database.js'); // adjust path if needed
 
 //Staff Use Cases 
 
 // 1. View Future Flights
-staffRoute.get('/view-flights', (req, res) => {
-
-  const airlineName = req.query.airline_name;
-  const query = ' SELECT * FROM Flight WHERE Airline_Name = ? AND Depart_Date >=CURDATE() ORDER BY Depart_Date ASC';
-  connection.query(query, [airlineName], (err, results) => {
-    if (err) {
-      console.error('Error fetching flights:', err);
-      return res.status(500).send('Server error.');
-    }
-    res.json(results);
-  });
-});
+staffRoute.get('/view-flights', (req, res) => {});
 
 // Create New Flights 
 staffRoute.post('/create-flight', (req, res) => {
   const {
-    flight_num,
     airline_name,
+    flight_num,
+    depart_date,
+    depart_time,
+    arrival_date,
+    arrival_time,
+    base_price,
     airplane_id,
     departure_airport,
     arrival_airport,
-    departure_time,
-    arrival_time,
-    price
+    status
   } = req.body;
 
   const query = `
-    INSERT INTO Flight (flight_num, airline_name, airplane_id, departure_airport, arrival_airport, departure_time, arrival_time, price)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO Flight (Airline_Name, Flight_Num, Depart_Date, Depart_Time, Arrival_Date, Arrival_Time, Base_Price, Airplane_ID, Departure_Airport, Arrival_Airport, Status)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
-  const values = [flight_num, airline_name, airplane_id, departure_airport, arrival_airport, departure_time, arrival_time, price];
+
+  const values = [
+    airline_name,
+    flight_num,
+    depart_date,
+    depart_time,
+    arrival_date,
+    arrival_time,
+    base_price,
+    airplane_id,
+    departure_airport,
+    arrival_airport,
+    status
+  ];
 
   connection.query(query, values, (err, result) => {
     if (err) {
@@ -46,12 +51,13 @@ staffRoute.post('/create-flight', (req, res) => {
   });
 });
 
+
 // . Change Flight Status
 staffRoute.post('/change-flight-status', (req, res) => {
   const { flight_num, airline_name, status } = req.body;
 
   const query = `
-    UPDATE Flight
+    UPDATE flight
     SET status = ?
     WHERE flight_num = ? AND airline_name = ?
   `;
@@ -67,14 +73,14 @@ staffRoute.post('/change-flight-status', (req, res) => {
 
 //. Add New Airplane
 staffRoute.post('/add-airplane', (req, res) => {
-  const { airline_name, airplane_id, num_of_seats, manufacturer, model } = req.body;
+  const { airline_name, airplane_id, num_of_seats, manufactures, model_num, manufacturing_date } = req.body;
 
   const query = `
-    INSERT INTO Airplane (airline_name, airplane_id, num_of_seats, manufacturer, model)
-    VALUES (?, ?, ?, ?, ?)
+    INSERT INTO Airplane (Airline_Name, ID, Num_Of_Seats, Manufactures, Model_Num, Manufacturing_Date)
+    VALUES (?, ?, ?, ?, ?, ?)
   `;
 
-  connection.query(query, [airline_name, airplane_id, num_of_seats, manufacturer, model], (err, result) => {
+  connection.query(query, [airline_name, airplane_id, num_of_seats, manufactures, model_num, manufacturing_date], (err, result) => {
     if (err) {
       console.error('Error adding airplane:', err);
       return res.status(500).send('Server error.');
@@ -85,14 +91,14 @@ staffRoute.post('/add-airplane', (req, res) => {
 
 // Add New Airport
 staffRoute.post('/add-airport', (req, res) => {
-  const { airport_name, city, country, airport_code } = req.body;
+  const { code, name, city, country, num_of_terminals, type } = req.body;
 
   const query = `
-    INSERT INTO Airport (airport_name, city, country, airport_code)
-    VALUES (?, ?, ?, ?)
+    INSERT INTO Airport (Code, Name, City, Country, Num_Of_Terminals, Type)
+    VALUES (?, ?, ?, ?, ?, ?)
   `;
 
-  connection.query(query, [airport_name, city, country, airport_code], (err, result) => {
+  connection.query(query, [code, name, city, country, num_of_terminals, type], (err, result) => {
     if (err) {
       console.error('Error adding airport:', err);
       return res.status(500).send('Server error.');
@@ -101,42 +107,61 @@ staffRoute.post('/add-airport', (req, res) => {
   });
 });
 
-//  6. View Flight Ratings
+
+// View Flight Ratings
 staffRoute.get('/view-flight-ratings', (req, res) => {
-  const { flight_num, airline_name } = req.query;
+  const { airline_name, flight_num, depart_date, depart_time } = req.query;
 
   const query = `
-    SELECT rating, comment
-    FROM FlightReview
-    WHERE flight_num = ? AND airline_name = ?
+    SELECT 
+      AVG(Rating) AS average_rating, 
+      Comment, 
+      Rating
+    FROM ratings
+    WHERE Airline_Name = ? AND Flight_Num = ? AND Depart_Date = ? AND Depart_Time = ?
   `;
 
-  connection.query(query, [flight_num, airline_name], (err, results) => {
+  connection.query(
+    query, 
+    [airline_name, flight_num, depart_date, depart_time], 
+    (err, results) => {
+      if (err) {
+        console.error('Error fetching flight ratings:', err);
+        return res.status(500).send('Server error.');
+      }
+
+      res.json({
+        average_rating: results.length ? results[0].average_rating : null,
+        reviews: results
+      });
+    }
+  );
+});
+
+
+// View Report: Total Tickets Sold
+staffRoute.get('/view-reports', (req, res) => {
+  const { startDate, endDate } = req.query;
+
+  const query = `
+    SELECT 
+      YEAR(Depart_Date) AS year,
+      MONTH(Depart_Date) AS month,
+      COUNT(*) AS tickets_sold
+    FROM ticket
+    WHERE Depart_Date BETWEEN ? AND ?
+    GROUP BY year, month
+    ORDER BY year, month
+  `;
+
+  connection.query(query, [startDate, endDate], (err, results) => {
     if (err) {
-      console.error('Error fetching flight ratings:', err);
+      console.error('Error fetching ticket reports:', err);
       return res.status(500).send('Server error.');
     }
     res.json(results);
   });
 });
 
-//  7. View Reports (Tickets Sold)
-staffRoute.get('/view-reports', (req, res) => {
-  const { airline_name, startDate, endDate } = req.query;
-
-  const query = `
-    SELECT COUNT(*) AS total_tickets_sold
-    FROM Ticket
-    WHERE airline_name = ? AND purchase_date BETWEEN ? AND ?
-  `;
-
-  connection.query(query, [airline_name, startDate, endDate], (err, result) => {
-    if (err) {
-      console.error('Error fetching report:', err);
-      return res.status(500).send('Server error.');
-    }
-    res.json(result[0]);
-  });
-});
 
 module.exports = staffRoute;
