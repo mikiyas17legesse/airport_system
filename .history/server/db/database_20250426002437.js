@@ -5,8 +5,8 @@ const dbConfig = {
   host: 'localhost',
   user: 'root',
   password: 'root',
-  database: 'airport_system',
-  port: '8889'
+  database: '',
+  port: '3306'
 };
 
 let connection;

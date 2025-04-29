@@ -5,6 +5,7 @@ const connection = require('../db/database.js');
 // Customer Signup endpoint
 // Expects: { username, password, ... }
 authRoute.post('/customer-signup', async (req, res) => {
+    console.log("Here");
     console.log('Received signup request:', req.body);
     const {
         email, firstName, lastName,
