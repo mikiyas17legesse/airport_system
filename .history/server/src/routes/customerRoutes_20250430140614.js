@@ -29,6 +29,7 @@ customerRoute.get('/search-flights', (req, res) => {
     connection.query(outboundFlightQ, outboundFlightParams, (err, results) => {
         if (err) return res.status(500).json({ message: 'Database error.' });
         outboundFlights = results;
+        console.log("Outbound flights:", outboundFlights);
 
         if (tripType === 'roundtrip' && returnDate) {
             const returnQuery = `
@@ -42,6 +43,7 @@ customerRoute.get('/search-flights', (req, res) => {
                 if (err) return res.status(500).json({ message: 'Database error.' });
 
                 returnFlights = returnResults;
+                console.log("Return flights:", returnFlights);
                 return res.status(200).json({ outboundFlights, returnFlights });
             });
         } else {

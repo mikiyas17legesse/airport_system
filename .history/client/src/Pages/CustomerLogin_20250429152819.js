@@ -27,16 +27,14 @@ const CustomerLogin = () => {
     }
     // Call the sign up endpoint which handles db querying
     if (isLogin) {
-      fetch('/api/auth/customer-login', {
+      fetch('http://localhost:5000/api/auth/customer-login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(formData)
       })
-      .then(async response => {
-        return response.json();
-      })
+      .then(response => response.json())
       .then(data => {
         if (data.success) {
           navigate('/home');
@@ -46,8 +44,9 @@ const CustomerLogin = () => {
       })
       .catch(error => {
         console.error('Error:', error);
-        alert('Failed to login: ' + error.message);
+        alert('Failed to login.');
       });
+      return;
     } else {
       fetch('/api/auth/customer-signup', {
         method: 'POST',
@@ -118,6 +117,7 @@ const CustomerLogin = () => {
         <form onSubmit={handleSubmit}>
           {!isLogin && renderNameFields()}
 
+          {/* Email + Password always shown */}
           <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Email" required />
           <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="Password" required />
           

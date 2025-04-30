@@ -28,33 +28,13 @@ const handleSearch = async (e) => {
       departureDate: departureDate.toISOString().split('T')[0],
       ...(tripType === "roundtrip" && { returnDate: returnDate.toISOString().split('T')[0] })
     };
-    if (!(departureDate instanceof Date) || isNaN(departureDate)) {
-      setError("Invalid departure date");
-      setLoading(false);
-      return;
-    }
     const response = await axios.get("/api/customer/search-flights", { params });
     // Response shape: { outboundFlights, returnFlights? }
-    const transformFlights = (flights) => flights.map(flight => {
-      const calculateDuration = (depTime, arrTime) => {
-        const [depHours, depMins] = depTime.split(':').map(Number);
-        const [arrHours, arrMins] = arrTime.split(':').map(Number);
-        const totalMins = (arrHours*60 + arrMins) - (depHours*60 + depMins);
-        return `${Math.floor(totalMins/60)}h ${totalMins%60}m`;
-      };
-    
-      return {
-        ...flight,
-        Depart_Date: new Date(flight.Depart_Date).toLocaleDateString(),
-        Arrival_Date: new Date(flight.Arrival_Date).toLocaleDateString(),
-        Duration: calculateDuration(flight.Depart_Time, flight.Arrival_Time)
-      };
+    let flights = response.data.outboundFlights || [];
+    setResults({ 
+      outboundFlights: flights, 
+      returnFlights: response.data.returnFlights || [] 
     });
-
-    setResults({
-      outboundFlights: transformFlights(response.data.outboundFlights || []),
-      returnFlights: transformFlights(response.data.returnFlights || [])
-    }); 
   } catch (err) {
     console.error("Full error:",err);
     console.error("Response:",err.response);

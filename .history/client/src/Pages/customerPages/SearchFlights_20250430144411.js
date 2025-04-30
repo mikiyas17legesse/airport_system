@@ -51,6 +51,9 @@ const handleSearch = async (e) => {
       };
     });
 
+    console.log("Transformed outbound:", transformFlights(response.data.outboundFlights || []));
+    console.log("Transformed return:", transformFlights(response.data.returnFlights || []));
+
     setResults({
       outboundFlights: transformFlights(response.data.outboundFlights || []),
       returnFlights: transformFlights(response.data.returnFlights || [])

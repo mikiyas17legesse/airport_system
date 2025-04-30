@@ -35,6 +35,11 @@ const CustomerLogin = () => {
         body: JSON.stringify(formData)
       })
       .then(async response => {
+        if (!response.ok) {
+          // Try to extract error message if any
+          const errorText = await response.text();
+          throw new Error(errorText || `Server error: ${response.status}`);
+        }
         return response.json();
       })
       .then(data => {
@@ -118,6 +123,7 @@ const CustomerLogin = () => {
         <form onSubmit={handleSubmit}>
           {!isLogin && renderNameFields()}
 
+          {/* Email + Password always shown */}
           <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Email" required />
           <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="Password" required />
           
