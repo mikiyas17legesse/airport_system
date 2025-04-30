@@ -3,13 +3,48 @@ import NavigationBar from "../components/Navbar";
 import axios from "axios";
 import FlightTable from "../components/FlightTable";
 
+const mockFlights = [
+  {
+    id: 1,
+    flightNumber: "ET101",
+    airline: "Ethiopian Airlines",
+    departure: "Addis Ababa",
+    arrival: "New York",
+    departureTime: "2025-05-01T08:00:00",
+    arrivalTime: "2025-05-01T16:00:00",
+    price: 850,
+    seatsAvailable: 12
+  },
+  {
+    id: 2,
+    flightNumber: "UA202",
+    airline: "United Airlines",
+    departure: "Los Angeles",
+    arrival: "London",
+    departureTime: "2025-05-02T10:30:00",
+    arrivalTime: "2025-05-02T22:45:00",
+    price: 1200,
+    seatsAvailable: 5
+  },
+  {
+    id: 3,
+    flightNumber: "TK303",
+    airline: "Turkish Airlines",
+    departure: "Istanbul",
+    arrival: "Toronto",
+    departureTime: "2025-05-03T06:15:00",
+    arrivalTime: "2025-05-03T13:20:00",
+    price: 950,
+    seatsAvailable: 20
+  }
+];
 
 const SearchFlights = () => {
   const [tripType, setTripType] = useState("oneway");
   const [source, setSource] = useState("");
   const [destination, setDestination] = useState("");
-  const [departureDate, setDepartureDate] = useState(new Date());
-  const [returnDate, setReturnDate] = useState(new Date());
+  const [departureDate, setDepartureDate] = useState("");
+  const [returnDate, setReturnDate] = useState("");
   const [results, setResults] = useState({});
 
   const [loading, setLoading] = useState(false);
@@ -28,39 +63,15 @@ const handleSearch = async (e) => {
       departureDate: departureDate.toISOString().split('T')[0],
       ...(tripType === "roundtrip" && { returnDate: returnDate.toISOString().split('T')[0] })
     };
-    if (!(departureDate instanceof Date) || isNaN(departureDate)) {
-      setError("Invalid departure date");
-      setLoading(false);
-      return;
-    }
     const response = await axios.get("/api/customer/search-flights", { params });
     // Response shape: { outboundFlights, returnFlights? }
-    const transformFlights = (flights) => flights.map(flight => {
-      const calculateDuration = (depTime, arrTime) => {
-        const [depHours, depMins] = depTime.split(':').map(Number);
-        const [arrHours, arrMins] = arrTime.split(':').map(Number);
-        const totalMins = (arrHours*60 + arrMins) - (depHours*60 + depMins);
-        return `${Math.floor(totalMins/60)}h ${totalMins%60}m`;
-      };
-    
-      return {
-        ...flight,
-        Depart_Date: new Date(flight.Depart_Date).toLocaleDateString(),
-        Arrival_Date: new Date(flight.Arrival_Date).toLocaleDateString(),
-        Duration: calculateDuration(flight.Depart_Time, flight.Arrival_Time)
-      };
+    let flights = response.data.outboundFlights || [];
+    setResults({ 
+      outboundFlights: flights, 
+      returnFlights: response.data.returnFlights || [] 
     });
-
-    setResults({
-      outboundFlights: transformFlights(response.data.outboundFlights || []),
-      returnFlights: transformFlights(response.data.returnFlights || [])
-    }); 
   } catch (err) {
-    console.error("Full error:",err);
-    console.error("Response:",err.response);
-    setError(err.response?.data?.message || 
-      err.message || 
-      "Failed to fetch flights. Check console for details.");
+    setError(err.response?.data?.message || "Failed to fetch flights");
   } finally {
     setLoading(false);
   }
@@ -135,8 +146,8 @@ const handleSearch = async (e) => {
             <label>Departure Date</label>
             <input
               type="date"
-              value={departureDate.toISOString().split('T')[0]} // Format for input
-              onChange={e => setDepartureDate(new Date(e.target.value))} // Parse to Date
+              value={departureDate}
+              onChange={e => setDepartureDate(e.target.value)}
               required
               style={{ width: "100%", padding: 8, marginTop: 4 }}
             />
@@ -158,20 +169,38 @@ const handleSearch = async (e) => {
           </button>
         </form>
       </div>
-      {results.outboundFlights && (
-        <div style={{ maxWidth: 800, margin: '2rem auto', padding: 24 }}>
-          <FlightTable 
-            flights={results.outboundFlights} 
-            title="Outbound Flights" 
-          />
-          {tripType === 'roundtrip' && (
-            <FlightTable
-              flights={results.returnFlights}
-              title="Return Flights"
-            />
-          )}
-        </div>
-      )}
+      <div style={{ maxWidth: 800, margin: '2rem auto', padding: 24 }}>
+        {results.length > 0 && (
+          <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 24 }}>
+            <thead>
+              <tr style={{ background: '#f5f5f5' }}>
+                <th style={{ padding: 8, border: '1px solid #ddd' }}>Flight No.</th>
+                <th style={{ padding: 8, border: '1px solid #ddd' }}>Airline</th>
+                <th style={{ padding: 8, border: '1px solid #ddd' }}>From</th>
+                <th style={{ padding: 8, border: '1px solid #ddd' }}>To</th>
+                <th style={{ padding: 8, border: '1px solid #ddd' }}>Departure</th>
+                <th style={{ padding: 8, border: '1px solid #ddd' }}>Arrival</th>
+                <th style={{ padding: 8, border: '1px solid #ddd' }}>Price ($)</th>
+                <th style={{ padding: 8, border: '1px solid #ddd' }}>Seats</th>
+              </tr>
+            </thead>
+            <tbody>
+              {results.map(flight => (
+                <tr key={flight.id}>
+                  <td style={{ padding: 8, border: '1px solid #ddd' }}>{flight.flightNumber}</td>
+                  <td style={{ padding: 8, border: '1px solid #ddd' }}>{flight.airline}</td>
+                  <td style={{ padding: 8, border: '1px solid #ddd' }}>{flight.departure}</td>
+                  <td style={{ padding: 8, border: '1px solid #ddd' }}>{flight.arrival}</td>
+                  <td style={{ padding: 8, border: '1px solid #ddd' }}>{new Date(flight.departureTime).toLocaleString()}</td>
+                  <td style={{ padding: 8, border: '1px solid #ddd' }}>{new Date(flight.arrivalTime).toLocaleString()}</td>
+                  <td style={{ padding: 8, border: '1px solid #ddd' }}>{flight.price}</td>
+                  <td style={{ padding: 8, border: '1px solid #ddd' }}>{flight.seatsAvailable}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
 };

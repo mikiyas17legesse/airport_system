@@ -8,8 +8,8 @@ const SearchFlights = () => {
   const [tripType, setTripType] = useState("oneway");
   const [source, setSource] = useState("");
   const [destination, setDestination] = useState("");
-  const [departureDate, setDepartureDate] = useState(new Date());
-  const [returnDate, setReturnDate] = useState(new Date());
+  const [departureDate, setDepartureDate] = useState("");
+  const [returnDate, setReturnDate] = useState("");
   const [results, setResults] = useState({});
 
   const [loading, setLoading] = useState(false);
@@ -28,39 +28,17 @@ const handleSearch = async (e) => {
       departureDate: departureDate.toISOString().split('T')[0],
       ...(tripType === "roundtrip" && { returnDate: returnDate.toISOString().split('T')[0] })
     };
-    if (!(departureDate instanceof Date) || isNaN(departureDate)) {
-      setError("Invalid departure date");
-      setLoading(false);
-      return;
-    }
     const response = await axios.get("/api/customer/search-flights", { params });
     // Response shape: { outboundFlights, returnFlights? }
-    const transformFlights = (flights) => flights.map(flight => {
-      const calculateDuration = (depTime, arrTime) => {
-        const [depHours, depMins] = depTime.split(':').map(Number);
-        const [arrHours, arrMins] = arrTime.split(':').map(Number);
-        const totalMins = (arrHours*60 + arrMins) - (depHours*60 + depMins);
-        return `${Math.floor(totalMins/60)}h ${totalMins%60}m`;
-      };
-    
-      return {
-        ...flight,
-        Depart_Date: new Date(flight.Depart_Date).toLocaleDateString(),
-        Arrival_Date: new Date(flight.Arrival_Date).toLocaleDateString(),
-        Duration: calculateDuration(flight.Depart_Time, flight.Arrival_Time)
-      };
+    let flights = response.data.outboundFlights || [];
+    setResults({ 
+      outboundFlights: flights, 
+      returnFlights: response.data.returnFlights || [] 
     });
-
-    setResults({
-      outboundFlights: transformFlights(response.data.outboundFlights || []),
-      returnFlights: transformFlights(response.data.returnFlights || [])
-    }); 
   } catch (err) {
     console.error("Full error:",err);
     console.error("Response:",err.response);
-    setError(err.response?.data?.message || 
-      err.message || 
-      "Failed to fetch flights. Check console for details.");
+    setError(err.response?.data?.message || "Failed to fetch flights");
   } finally {
     setLoading(false);
   }
@@ -135,8 +113,8 @@ const handleSearch = async (e) => {
             <label>Departure Date</label>
             <input
               type="date"
-              value={departureDate.toISOString().split('T')[0]} // Format for input
-              onChange={e => setDepartureDate(new Date(e.target.value))} // Parse to Date
+              value={departureDate}
+              onChange={e => setDepartureDate(e.target.value)}
               required
               style={{ width: "100%", padding: 8, marginTop: 4 }}
             />

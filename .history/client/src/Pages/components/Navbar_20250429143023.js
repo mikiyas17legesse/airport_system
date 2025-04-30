@@ -12,9 +12,7 @@ const NavigationBar = () => {
         <Nav.Link className="nav-link-spacing" as={Link} to="/book-flights">Book Flights</Nav.Link>
         <Nav.Link className="nav-link-spacing" as={Link} to="/search-flights">Search Flights</Nav.Link>
         <Nav.Link className="nav-link-spacing" as={Link} to="/submit-ratings">Submit Ratings</Nav.Link>
-      </Nav>
-      <Nav className="logout-nav">
-        <Nav.Link className="logout-link" as={Link} to="/">Logout</Nav.Link>
+        <Nav.Link className="nav-link-spacing" as={Link} to="/bookings">Bookings</Nav.Link>
       </Nav>
     </Container>
   </Navbar>

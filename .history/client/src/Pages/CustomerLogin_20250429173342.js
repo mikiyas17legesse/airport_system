@@ -29,7 +29,9 @@ const CustomerLogin = () => {
     if (isLogin) {
       fetch('/api/auth/customer-login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify(formData)
       })
       .then(async response => {
@@ -116,6 +118,7 @@ const CustomerLogin = () => {
         <form onSubmit={handleSubmit}>
           {!isLogin && renderNameFields()}
 
+          {/* Email + Password always shown */}
           <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Email" required />
           <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="Password" required />
           
