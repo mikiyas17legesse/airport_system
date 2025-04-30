@@ -1,15 +1,12 @@
 import React from 'react';
-import './HomePage.css';
-import NavigationBar from './components/staffNavBar';
+import LogoutButton from './components/LogoutButton'; // Adjust path if needed
 
 const StaffHomePages = () => {
-
   return (
-    <div className="dashboard-container">
-      <NavigationBar />
-      <div className="dashboard-content">
-        <h1>Home</h1>
-      </div>
+    <div className="container mt-5">
+      <h1>Staff Dashboard</h1>
+      <p>Welcome back! Use the options below to manage flights.</p>
+      <LogoutButton />
     </div>
   );
 };

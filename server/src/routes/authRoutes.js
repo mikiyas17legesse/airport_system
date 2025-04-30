@@ -143,4 +143,17 @@ authRoute.post('/staff-login', (req, res) => {
     });
 });
 
+// Logout Route
+authRoute.post('/logout', (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        console.error('Logout failed:', err);
+        return res.status(500).send('Error logging out.');
+      }
+      res.clearCookie('connect.sid'); // If using express-session
+      res.send('Logged out successfully');
+    });
+  });
+  
+
 module.exports = authRoute;
