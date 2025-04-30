@@ -58,8 +58,7 @@ const StaffLogin = () => {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          alert('Login successful.');
-          navigate('/');
+          navigate('/staff-home');
         } else {
           alert(data.message);
         }
@@ -68,7 +67,7 @@ const StaffLogin = () => {
         console.error('Error:', error);
         alert('Failed to login.');
       });
-    }
+    }    
   };
 
   const NameFields = () => <>

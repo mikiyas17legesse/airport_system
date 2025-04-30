@@ -8,6 +8,14 @@ import HomePage from './Pages/HomePage';
 import SearchFlights from './Pages/customerPages/SearchFlights'
 import Ratings from './Pages/customerPages/Ratings'
 import Bookings from './Pages/customerPages/Bookings'
+import StaffHomePage from './Pages/StaffHomePage';
+import ViewFlights from './Pages/staffPages/ViewFlights';
+import CreateFlight from './Pages/staffPages/CreateFlight';
+import ChangeFlightStatus from './Pages/staffPages/ChangeFlightStatus';
+import AddAirplane from './Pages/staffPages/AddAirplane';
+import AddAirport from './Pages/staffPages/AddAirport';
+import FlightRatings from './Pages/staffPages/FlightRatings';
+import ViewReports from './Pages/staffPages/ViewReports';
 
 function App() {
   return (
@@ -22,6 +30,15 @@ function App() {
           <Route path="/search-flights" element={<SearchFlights />} />
           <Route path="/submit-ratings" element={<Ratings />} />
           <Route path="/book-flights" element={<Bookings />} />
+          <Route path="/staff-home" element={<StaffHomePage />} />
+          <Route path="/view-flights" element={<ViewFlights />} />
+          <Route path="/create-flight" element={<CreateFlight />} />
+          <Route path="/change-status" element={<ChangeFlightStatus />} />
+          <Route path="/add-airplane" element={<AddAirplane />} />
+          <Route path="/add-airport" element={<AddAirport />} />
+          <Route path="/flight-ratings" element={<FlightRatings />} />
+          <Route path="/view-reports" element={<ViewReports />} />
+
         </Routes>
       </div>
     </BrowserRouter>
