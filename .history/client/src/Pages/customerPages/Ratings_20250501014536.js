@@ -20,24 +20,9 @@ const Ratings = () => {
     setComments(prev => ({ ...prev, [flightId]: value }));
   };
 
-  const handleSubmit = async (flightId) => {
-    const flight = flights.find(f => f.id === flightId);
-    try {
-      await axios.post('/api/customer/rate-flight', {
-        customer_email: user.email,
-        airline_name: flight.Airline_Name,
-        flight_num: flight.Flight_Num,
-        depart_date: flight.Depart_Date,
-        depart_time: flight.Depart_Time,
-        rating: ratings[flightId],
-        comment: comments[flightId]
-      });
-      console.log("Rating submitted successfully!");
-      setStatus(prev => ({ ...prev, [flightId]: "Rating submitted successfully!" }));
-    } catch (err) {
-      console.error("Rating submission failed:", err);
-      setStatus(prev => ({ ...prev, [flightId]: "Failed to submit rating" }));
-    }
+  const handleSubmit = (flightId) => {
+    setStatus(prev => ({ ...prev, [flightId]: "Submitted!" }));
+    console.log("Passed onto the backend:", ratings, comments);
   };
 
   useEffect(() => {
@@ -64,18 +49,22 @@ const Ratings = () => {
   }, [user.email]);
 
   return (
-    <div>
+    <div className="ratings-container">
       <NavigationBar />
-      <h1>Rate Your Past Flights</h1>
+      <h1 className="ratings-title">Rate Your Past Flights</h1>
       {flights.length === 0 ? (
         <p>No past flights found.</p>
       ) : (
         flights.map(flight => (
-          <div key={flight.id} style={{ border: "1px solid #ccc", margin: "20px", padding: "10px" }}>
-            <div>
-              <strong>Flight:</strong> {flight.flightNumber} | <strong>Date:</strong> {flight.date} | <strong>From:</strong> {flight.from} | <strong>To:</strong> {flight.to}
+          <div key={flight.id} className="flight-card">
+            <div className="flight-header">
+              <div><strong>{flight.flightNumber}</strong></div>
+              <div>{flight.date}</div>
             </div>
             <div>
+              <div><strong>Route:</strong> {flight.from} → {flight.to}</div>
+            </div>
+            <div className="rating-section">
               <label className="rating-label">
                 Rating:
                 <select
@@ -83,12 +72,12 @@ const Ratings = () => {
                   value={ratings[flight.id] || ""}
                   onChange={e => handleRatingChange(flight.id, e.target.value)}
                 >
-                  <option value=""></option>
-                  {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
+                  <option value="">Select rating</option>
+                  {[1,2,3,4,5].map(n => <option key={n} value={n}>{n} ★</option>)}
                 </select>
               </label>
             </div>
-            <div>
+            <div className="comment-section">
               <label className="comment-label">
                 Comment:
                 <input

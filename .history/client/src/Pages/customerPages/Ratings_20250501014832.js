@@ -32,7 +32,6 @@ const Ratings = () => {
         rating: ratings[flightId],
         comment: comments[flightId]
       });
-      console.log("Rating submitted successfully!");
       setStatus(prev => ({ ...prev, [flightId]: "Rating submitted successfully!" }));
     } catch (err) {
       console.error("Rating submission failed:", err);

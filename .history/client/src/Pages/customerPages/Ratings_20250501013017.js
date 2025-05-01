@@ -1,50 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {useAuth} from '../../context/AuthContext';
 import NavigationBar from '../components/Navbar';
 import './Ratings.css';
-
 
 const Ratings = () => {
   const [flights, setFlights] = useState([]);
   const [ratings, setRatings] = useState({});
   const [comments, setComments] = useState({});
   const [status, setStatus] = useState({});
-  const {user} = useAuth();
 
-  const handleRatingChange = (flightId, value) => {
-    setRatings(prev => ({ ...prev, [flightId]: value }));
-  };
-
-  const handleCommentChange = (flightId, value) => {
-    setComments(prev => ({ ...prev, [flightId]: value }));
-  };
-
-  const handleSubmit = async (flightId) => {
-    const flight = flights.find(f => f.id === flightId);
-    try {
-      await axios.post('/api/customer/rate-flight', {
-        customer_email: user.email,
-        airline_name: flight.Airline_Name,
-        flight_num: flight.Flight_Num,
-        depart_date: flight.Depart_Date,
-        depart_time: flight.Depart_Time,
-        rating: ratings[flightId],
-        comment: comments[flightId]
-      });
-      console.log("Rating submitted successfully!");
-      setStatus(prev => ({ ...prev, [flightId]: "Rating submitted successfully!" }));
-    } catch (err) {
-      console.error("Rating submission failed:", err);
-      setStatus(prev => ({ ...prev, [flightId]: "Failed to submit rating" }));
-    }
-  };
+  // Replace this with actual auth logic if you have it
+  const userEmail = 'test@example.com'; // this should come from context/session
 
   useEffect(() => {
     const fetchFlights = async () => {
       try {
         const res = await axios.get('/api/customer/past-flights', {
-          params: { email: user.email }
+          params: { email: userEmail }
         });
         // Assign a unique ID per flight based on its composite key
         const enriched = res.data.map((f, index) => ({
@@ -61,7 +33,34 @@ const Ratings = () => {
       }
     };
     fetchFlights();
-  }, [user.email]);
+  }, []);
+
+  const handleRatingChange = (flightId, value) => {
+    setRatings(prev => ({ ...prev, [flightId]: value }));
+  };
+
+  const handleCommentChange = (flightId, value) => {
+    setComments(prev => ({ ...prev, [flightId]: value }));
+  };
+
+  const handleSubmit = async (flightId) => {
+    const flight = flights.find(f => f.id === flightId);
+    try {
+      await axios.post('/api/customer/ratings', {
+        customer_email: userEmail,
+        airline_name: flight.Airline_Name,
+        flight_num: flight.Flight_Num,
+        depart_date: flight.Depart_Date,
+        depart_time: flight.Depart_Time,
+        rating: ratings[flightId],
+        comment: comments[flightId]
+      });
+      setStatus(prev => ({ ...prev, [flightId]: "Submitted!" }));
+    } catch (err) {
+      console.error("Rating submission failed:", err);
+      setStatus(prev => ({ ...prev, [flightId]: "Failed to submit." }));
+    }
+  };
 
   return (
     <div>
@@ -84,7 +83,9 @@ const Ratings = () => {
                   onChange={e => handleRatingChange(flight.id, e.target.value)}
                 >
                   <option value=""></option>
-                  {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
+                  {[1, 2, 3, 4, 5].map(n => (
+                    <option key={n} value={n}>{n}</option>
+                  ))}
                 </select>
               </label>
             </div>

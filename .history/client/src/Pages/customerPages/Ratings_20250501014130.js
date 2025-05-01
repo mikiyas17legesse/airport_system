@@ -1,9 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import {useAuth} from '../../context/AuthContext';
 import NavigationBar from '../components/Navbar';
 import './Ratings.css';
 
+const mockFlights = [
+  {
+    id: 1,
+    flightNumber: 'AA123',
+    date: '2025-03-15',
+    from: 'JFK',
+    to: 'LAX'
+  },
+  {
+    id: 2,
+    flightNumber: 'DL456',
+    date: '2025-04-01',
+    from: 'LAX',
+    to: 'ORD'
+  }
+];
 
 const Ratings = () => {
   const [flights, setFlights] = useState([]);
@@ -20,24 +36,9 @@ const Ratings = () => {
     setComments(prev => ({ ...prev, [flightId]: value }));
   };
 
-  const handleSubmit = async (flightId) => {
-    const flight = flights.find(f => f.id === flightId);
-    try {
-      await axios.post('/api/customer/rate-flight', {
-        customer_email: user.email,
-        airline_name: flight.Airline_Name,
-        flight_num: flight.Flight_Num,
-        depart_date: flight.Depart_Date,
-        depart_time: flight.Depart_Time,
-        rating: ratings[flightId],
-        comment: comments[flightId]
-      });
-      console.log("Rating submitted successfully!");
-      setStatus(prev => ({ ...prev, [flightId]: "Rating submitted successfully!" }));
-    } catch (err) {
-      console.error("Rating submission failed:", err);
-      setStatus(prev => ({ ...prev, [flightId]: "Failed to submit rating" }));
-    }
+  const handleSubmit = (flightId) => {
+    setStatus(prev => ({ ...prev, [flightId]: "Submitted!" }));
+    console.log("Passed onto the backend:", ratings, comments);
   };
 
   useEffect(() => {
@@ -61,7 +62,7 @@ const Ratings = () => {
       }
     };
     fetchFlights();
-  }, [user.email]);
+  }, []);
 
   return (
     <div>
