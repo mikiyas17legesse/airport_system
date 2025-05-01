@@ -3,7 +3,6 @@ import NavigationBar from "../components/Navbar";
 import axios from "axios";
 import FlightTable from "../components/FlightTable";
 
-
 const SearchFlights = () => {
   const [tripType, setTripType] = useState("oneway");
   const [source, setSource] = useState("");
@@ -15,71 +14,56 @@ const SearchFlights = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-const handleSearch = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setError("");
-  setResults({ outboundFlights: [], returnFlights: [] });
-  try {
-    const params = {
-      tripType,
-      source,
-      destination,
-      departureDate: departureDate.toISOString().split('T')[0],
-      ...(tripType === "roundtrip" && { returnDate: returnDate.toISOString().split('T')[0] })
-    };
-    if (!(departureDate instanceof Date) || isNaN(departureDate)) {
-      setError("Invalid departure date");
-      setLoading(false);
-      return;
-    }
-    const response = await axios.get("/api/customer/search-flights", { params });
-    // Response shape: { outboundFlights, returnFlights? }
-    const transformFlights = (flights) => flights.map(flight => {
-      const calculateDuration = (depTime, arrTime) => {
-        const [depHours, depMins] = depTime.split(':').map(Number);
-        const [arrHours, arrMins] = arrTime.split(':').map(Number);
-        const totalMins = (arrHours*60 + arrMins) - (depHours*60 + depMins);
-        return `${Math.floor(totalMins/60)}h ${totalMins%60}m`;
-      };
-    
-      return {
-        ...flight,
-        Depart_Date: new Date(flight.Depart_Date).toLocaleDateString(),
-        Arrival_Date: new Date(flight.Arrival_Date).toLocaleDateString(),
-        Duration: calculateDuration(flight.Depart_Time, flight.Arrival_Time)
-      };
-    });
-
-    setResults({
-      outboundFlights: transformFlights(response.data.outboundFlights || []),
-      returnFlights: transformFlights(response.data.returnFlights || [])
-    }); 
-  } catch (err) {
-    console.error("Full error:",err);
-    console.error("Response:",err.response);
-    setError(err.response?.data?.message || 
-      err.message || 
-      "Failed to fetch flights. Check console for details.");
-  } finally {
-    setLoading(false);
-  }
-};
-
-  const handleSubmit = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
-    // Pass these values to backend endpoint later
-    const searchParams = {
-      tripType,
-      source,
-      destination,
-      departureDate,
-      returnDate: tripType === "roundtrip" ? returnDate : null,
-    };
-    console.log("Search params:", searchParams);
-    // Pass searchParams to backend
-  };
+    setLoading(true);
+    setError("");
+    setResults({ outboundFlights: [], returnFlights: [] });
+    try {
+      const params = {
+        tripType,
+        source,
+        destination,
+        departureDate: departureDate.toISOString().split('T')[0],
+        ...(tripType === "roundtrip" && { returnDate: returnDate.toISOString().split('T')[0] })
+      };
+      if (!(departureDate instanceof Date) || isNaN(departureDate)) {
+        setError("Invalid departure date");
+        setLoading(false);
+        return;
+      }
+      const response = await axios.get("/api/customer/search-flights", { params });
+      // Response shape: { outboundFlights, returnFlights? }
+      const transformFlights = (flights) => flights.map(flight => {
+        const calculateDuration = (depTime, arrTime) => {
+          const [depHours, depMins] = depTime.split(':').map(Number);
+          const [arrHours, arrMins] = arrTime.split(':').map(Number);
+          const totalMins = (arrHours*60 + arrMins) - (depHours*60 + depMins);
+          return `${Math.floor(totalMins/60)}h ${totalMins%60}m`;
+        };
+      
+        return {
+          ...flight,
+          Depart_Date: new Date(flight.Depart_Date).toLocaleDateString(),
+          Arrival_Date: new Date(flight.Arrival_Date).toLocaleDateString(),
+          Duration: calculateDuration(flight.Depart_Time, flight.Arrival_Time)
+        };
+      });
 
+      setResults({
+        outboundFlights: transformFlights(response.data.outboundFlights || []),
+        returnFlights: transformFlights(response.data.returnFlights || [])
+      }); 
+    } catch (err) {
+      console.error("Full error:",err);
+      console.error("Response:",err.response);
+      setError(err.response?.data?.message || 
+        err.message || 
+        "Failed to fetch flights. Check console for details.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div>
@@ -160,15 +144,55 @@ const handleSearch = async (e) => {
       </div>
       {results.outboundFlights && (
         <div style={{ maxWidth: 800, margin: '2rem auto', padding: 24 }}>
-          <FlightTable 
-            flights={results.outboundFlights} 
-            title="Outbound Flights" 
-          />
-          {tripType === 'roundtrip' && (
-            <FlightTable
-              flights={results.returnFlights}
-              title="Return Flights"
-            />
+          {results.outboundFlights.length > 0 ? (
+            <>
+              <FlightTable 
+                flights={results.outboundFlights} 
+                onBookFlight={async (bookingData) => {
+                  try {
+                    const token = localStorage.getItem('token');
+                    const response = await axios.post('/api/customer/purchase-ticket', bookingData, {
+                      headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                      },
+                    });
+                    return response.data; // Return the response for FlightTable to use
+                  } catch (error) {
+                    console.log(error);
+                    console.error('Booking failed:', error);
+                    throw error; // Rethrow to handle in FlightTable
+                  }
+                }}
+                title="Outbound Flights"
+              />
+              {tripType === 'roundtrip' && results.returnFlights.length > 0 && (
+                <FlightTable
+                  flights={results.returnFlights}
+                  onBookFlight={async (bookingData) => {
+                    try {
+                      const token = localStorage.getItem('token');
+                      const response = await axios.post('/api/customer/purchase-ticket', bookingData, {
+                        headers: {
+                          'Content-Type': 'application/json',
+                          Authorization: `Bearer ${token}`,
+                        },
+                      });
+                      return response.data; // Return the response for FlightTable to use
+                    } catch (error) {
+                      console.error('Booking failed:', error);
+                      throw error; // Rethrow to handle in FlightTable
+                    }
+                  }}
+                  title="Return Flights"
+                />
+              )}
+            </>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
+              <p>No flights found for your search criteria</p>
+              <p>Please try different dates or routes</p>
+            </div>
           )}
         </div>
       )}
