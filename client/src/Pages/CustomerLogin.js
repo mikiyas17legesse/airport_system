@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './CustomerLogin.css';
+import { useAuth } from '../context/AuthContext';
 
 const CustomerLogin = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
+
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     email: '', password: '', confirmPassword: '',
@@ -32,16 +35,18 @@ const CustomerLogin = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        })
       })
       .then(async response => {
-        return response.json();
-      })
-      .then(data => {
-        if (data.success) {
+        const data = await response.json();
+        if (response.ok) { // Successful login
+          login({ email: data.email, role: 'customer', firstName: data.firstName });
           navigate('/home');
-        } else {
-          alert(data.message);
+        } else { // Failed login
+          alert(data.message || 'Login failed'); 
         }
       })
       .catch(error => {
@@ -58,9 +63,8 @@ const CustomerLogin = () => {
       })
       .then(response => response.json())
       .then(data => {
-        if (data.success) {
-          alert('Customer created successfully!');
-          navigate('/');
+        if (data.success) { // Successful signup
+          navigate('/customer-login');
         } else {
           alert(data.message);
         }

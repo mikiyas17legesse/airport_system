@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './StaffLogin.css';
 
 const StaffLogin = () => {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
+  const { login } = useAuth();
 
   const [formData, setFormData] = useState({
     username: '',
@@ -26,7 +28,36 @@ const StaffLogin = () => {
       alert("Passwords do not match!");
       return;
     }
-    if (!isLogin) {
+    if (isLogin) {
+      fetch('/api/auth/staff-login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username: formData.username,
+          password: formData.password
+        })
+      })
+      .then(async response => {
+        const data = await response.json();
+        if (response.ok) {
+          login({
+            username: data.username,
+            role: 'staff',
+            airlineName: data.airlineName,
+            firstName: data.firstName
+          });
+          navigate('/home'); // Staff dashboard in there case
+        } else {
+          alert(data.message || 'Login failed');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Login error: ' + error.message);
+      });
+    } else { // Signup
       fetch('/api/auth/staff-signup', {
         method: 'POST',
         headers: {
@@ -47,27 +78,6 @@ const StaffLogin = () => {
         console.error('Error:', error);
         alert('Failed to create staff.');
       });
-    } else {
-      fetch('/api/auth/staff-login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert('Login successful.');
-          navigate('/');
-        } else {
-          alert(data.message);
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('Failed to login.');
-      });
     }
   };
 
@@ -76,14 +86,12 @@ const StaffLogin = () => {
     <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} placeholder="First Name" required />
     <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} placeholder="Last Name" required />
   </>;
-
   const ContactFields = () => <>
     <h4>Contact Information</h4>
     <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Email" required />
     <input type="tel" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} placeholder="Phone Number" required />
     <input type="text" name="airlineName" value={formData.airlineName} onChange={handleChange} placeholder="Airline Name" required />
   </>;
-
   const DOBField = () => <>
     <h4>Date of Birth</h4>
     <input type="date" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleChange} required />
