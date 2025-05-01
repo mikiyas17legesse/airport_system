@@ -228,7 +228,7 @@ customerRoute.post('/purchase-ticket', async (req, res) => {
 
 customerRoute.delete('/cancel-ticket', async (req, res) => {
   const { ticketId } = req.body;
-  const customerEmail = req.user.email;
+  const customerEmail = req.user.email; // assumes auth middleware has set req.user
 
   try {
     // Step 1: Check that the ticket belongs to the customer and get the flight time

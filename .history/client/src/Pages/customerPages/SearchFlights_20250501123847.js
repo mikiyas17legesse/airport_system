@@ -151,7 +151,7 @@ const SearchFlights = () => {
                 onBookFlight={async (bookingData) => {
                   try {
                     const token = localStorage.getItem('token');
-                    const response = await axios.post('http://localhost:3001/api/customer/purchase-ticket', bookingData, {
+                    const response = await axios.post('/api/customer/purchase-ticket', bookingData, {
                       headers: {
                         'Content-Type': 'application/json',
                         Authorization: `Bearer ${token}`,
@@ -159,7 +159,7 @@ const SearchFlights = () => {
                     });
                     return response.data; // Return the response for FlightTable to use
                   } catch (error) {
-                    // console.log(error);
+                    console.log(error);
                     console.error('Booking failed:', error);
                     throw error; // Rethrow to handle in FlightTable
                   }

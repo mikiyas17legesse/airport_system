@@ -2,17 +2,17 @@ import React, { useState } from 'react';
 import './HomePage.css';
 import NavigationBar from './components/Navbar';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
   const { user } = useAuth();
   const [flights, setFlights] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [hasLoadedFlights, setHasLoadedFlights] = useState(false);
+  const navigate = useNavigate();
 
   const handleViewUpcomingFlights = async () => {
     try {
       setLoading(true);
-      setHasLoadedFlights(true);
       const response = await fetch(`/api/customer/view-my-flights?email=${user.email}`);
       const data = await response.json();
       if (response.ok) {
@@ -54,6 +54,7 @@ const HomePage = () => {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to cancel ticket');
       
+      // Refresh the flights list after successful cancellation
       handleViewUpcomingFlights();
       alert(data.message || 'Ticket cancelled successfully');
     } catch (error) {
@@ -88,12 +89,7 @@ const HomePage = () => {
               </button>
             </div>
             
-            {hasLoadedFlights && flights.length === 0 && (
-              <div className="no-flights-message">
-                <p>You don't have any upcoming flights booked yet.</p>
-              </div>
-            )}
-            {flights.length > 0 && (
+            {flights.length > 0 ? (
               <div className="flights-container">
                 <h2>Your Upcoming Flights</h2>
                 <div className="flights-list">
@@ -113,6 +109,16 @@ const HomePage = () => {
                     </div>
                   ))}
                 </div>
+              </div>
+            ) : (
+              <div className="no-flights-message">
+                <p>You don't have any upcoming flights booked yet.</p>
+                <button 
+                  className="action-btn"
+                  onClick={() => navigate('/book-flights')}
+                >
+                  Book a Flight
+                </button>
               </div>
             )}
           </div>

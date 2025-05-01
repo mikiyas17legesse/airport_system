@@ -127,36 +127,6 @@ h2 {
   opacity: 0.8;
 }
 
-.no-flights-message {
-  text-align: center;
-  margin: 2rem 0;
-  padding: 1.5rem;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.no-flights-message p {
-  font-size: 1.1rem;
-  color: #555;
-  margin: 0;
-}
-
-.no-flights-message .action-btn {
-  padding: 0.8rem 1.5rem;
-  font-size: 1rem;
-  background-color: #0066cc;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.no-flights-message .action-btn:hover {
-  background-color: #0052a3;
-}
-
 @keyframes gradient {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }

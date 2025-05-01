@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import './HomePage.css';
 import NavigationBar from './components/Navbar';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
   const { user } = useAuth();
   const [flights, setFlights] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasLoadedFlights, setHasLoadedFlights] = useState(false);
+  const navigate = useNavigate();
 
   const handleViewUpcomingFlights = async () => {
     try {
@@ -54,6 +56,7 @@ const HomePage = () => {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to cancel ticket');
       
+      // Refresh the flights list after successful cancellation
       handleViewUpcomingFlights();
       alert(data.message || 'Ticket cancelled successfully');
     } catch (error) {
@@ -88,33 +91,40 @@ const HomePage = () => {
               </button>
             </div>
             
-            {hasLoadedFlights && flights.length === 0 && (
-              <div className="no-flights-message">
-                <p>You don't have any upcoming flights booked yet.</p>
-              </div>
-            )}
-            {flights.length > 0 && (
-              <div className="flights-container">
-                <h2>Your Upcoming Flights</h2>
-                <div className="flights-list">
-                  {flights.map((flight) => (
-                    <div key={`${flight.Flight_Num}-${flight.Depart_Date}`} className="flight-card">
-                      <h3>{flight.Departure_Airport_Name} → {flight.Arrival_Airport_Name}</h3>
-                      <p>Departure: {formatDate(flight.Depart_Date)} at {formatTime(flight.Depart_Time)}</p>
-                      <div className="flight-actions">
-                        <button 
-                          className="cancel-btn"
-                          onClick={() => handleCancelTicket(flight.Ticket_ID)}
-                          disabled={!isFlightCancellable(flight.Depart_Date, flight.Depart_Time)}
-                        >
-                          Cancel Flight
-                        </button>
+            {hasLoadedFlights ? (
+              flights.length > 0 ? (
+                <div className="flights-container">
+                  <h2>Your Upcoming Flights</h2>
+                  <div className="flights-list">
+                    {flights.map((flight) => (
+                      <div key={`${flight.Flight_Num}-${flight.Depart_Date}`} className="flight-card">
+                        <h3>{flight.Departure_Airport_Name} → {flight.Arrival_Airport_Name}</h3>
+                        <p>Departure: {formatDate(flight.Depart_Date)} at {formatTime(flight.Depart_Time)}</p>
+                        <div className="flight-actions">
+                          <button 
+                            className="cancel-btn"
+                            onClick={() => handleCancelTicket(flight.Ticket_ID)}
+                            disabled={!isFlightCancellable(flight.Depart_Date, flight.Depart_Time)}
+                          >
+                            Cancel Flight
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              ) : (
+                <div className="no-flights-message">
+                  <p>You don't have any upcoming flights booked yet.</p>
+                  <button 
+                    className="action-btn"
+                    onClick={() => navigate('/search-flights')}
+                  >
+                    Book a Flight
+                  </button>
+                </div>
+              )
+            ) : null}
           </div>
         ) : (
           <h1>Welcome to Airline Management System</h1>

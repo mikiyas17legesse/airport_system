@@ -227,12 +227,13 @@ customerRoute.post('/purchase-ticket', async (req, res) => {
 });
 
 customerRoute.delete('/cancel-ticket', async (req, res) => {
+  const db = require('../db'); // import your DB connection logic
   const { ticketId } = req.body;
-  const customerEmail = req.user.email;
+  const customerEmail = req.user.email; // assumes auth middleware has set req.user
 
   try {
     // Step 1: Check that the ticket belongs to the customer and get the flight time
-    const [result] = await connection.query(`
+    const [result] = await db.query(`
       SELECT F.Depart_Date, F.Depart_Time
       FROM Purchase P
       JOIN Ticket T ON P.Ticket_ID = T.Ticket_ID
@@ -260,7 +261,7 @@ customerRoute.delete('/cancel-ticket', async (req, res) => {
     }
 
     // Step 3: Delete from Purchase (make the ticket available again)
-    await connection.query(`DELETE FROM Purchase WHERE Ticket_ID = ? AND Customer_Email = ?`, [ticketId, customerEmail]);
+    await db.query(`DELETE FROM Purchase WHERE Ticket_ID = ? AND Customer_Email = ?`, [ticketId, customerEmail]);
 
     return res.json({ message: 'Ticket successfully canceled. It is now available to be purchased again.' });
   } catch (err) {

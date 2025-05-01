@@ -226,49 +226,9 @@ customerRoute.post('/purchase-ticket', async (req, res) => {
   }
 });
 
-customerRoute.delete('/cancel-ticket', async (req, res) => {
-  const { ticketId } = req.body;
-  const customerEmail = req.user.email;
+customerRoute.delete('/cancel-ticket', (req, res) => {
 
-  try {
-    // Step 1: Check that the ticket belongs to the customer and get the flight time
-    const [result] = await connection.query(`
-      SELECT F.Depart_Date, F.Depart_Time
-      FROM Purchase P
-      JOIN Ticket T ON P.Ticket_ID = T.Ticket_ID
-      JOIN Flight F ON T.Airline_Name = F.Airline_Name
-                   AND T.Flight_Num = F.Flight_Num
-                   AND T.Depart_Date = F.Depart_Date
-                   AND T.Depart_Time = F.Depart_Time
-      WHERE P.Ticket_ID = ? AND P.Customer_Email = ?
-    `, [ticketId, customerEmail]);
-
-    if (result.length === 0) {
-      return res.status(404).json({ error: 'Ticket not found or does not belong to user' });
-    }
-
-    const { Depart_Date, Depart_Time } = result[0];
-    const flightDateTime = new Date(`${Depart_Date}T${Depart_Time}`);
-    const now = new Date();
-
-    const timeDiffInMs = flightDateTime - now;
-    const hoursUntilFlight = timeDiffInMs / (1000 * 60 * 60);
-
-    // Step 2: Only allow cancel if flight is > 24 hours away
-    if (hoursUntilFlight < 24) {
-      return res.status(400).json({ error: 'Flight is less than 24 hours away. Cannot cancel.' });
-    }
-
-    // Step 3: Delete from Purchase (make the ticket available again)
-    await connection.query(`DELETE FROM Purchase WHERE Ticket_ID = ? AND Customer_Email = ?`, [ticketId, customerEmail]);
-
-    return res.json({ message: 'Ticket successfully canceled. It is now available to be purchased again.' });
-  } catch (err) {
-    console.error('Cancel error:', err);
-    res.status(500).json({ error: 'Server error while canceling ticket' });
-  }
 });
-
 
 customerRoute.post('/rate-flight', async (req, res) => {
   const {

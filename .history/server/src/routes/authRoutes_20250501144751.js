@@ -29,7 +29,7 @@ authRoute.post('/customer-signup', async (req, res) => {
             [email, firstName, lastName, password, buildingNum, street, city, state, zip, passportNum, passportExpiration, passportCountry, dateOfBirth],
             (err, results) => {
                 if (err) return res.status(500).json({ message: 'Database error.' });
-                res.status(201).json({ message: 'Customer created successfully.' });
+                console.log('User created successfully.');
             }
         );
     });

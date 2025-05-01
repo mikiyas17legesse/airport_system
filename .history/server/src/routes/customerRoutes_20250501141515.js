@@ -2,6 +2,8 @@ const express = require('express');
 const customerRoute = express.Router();
 const connection = require('../db/database.js');
 
+const {useAuth} = require('../context/AuthContext');
+
 // View all future flights for the customer
 customerRoute.get('/view-my-flights', async (req, res) => {
     const date = new Date();
@@ -228,7 +230,7 @@ customerRoute.post('/purchase-ticket', async (req, res) => {
 
 customerRoute.delete('/cancel-ticket', async (req, res) => {
   const { ticketId } = req.body;
-  const customerEmail = req.user.email;
+  const customerEmail = req.user.email; // assumes auth middleware has set req.user
 
   try {
     // Step 1: Check that the ticket belongs to the customer and get the flight time

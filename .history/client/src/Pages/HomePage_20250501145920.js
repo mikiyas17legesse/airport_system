@@ -54,6 +54,7 @@ const HomePage = () => {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to cancel ticket');
       
+      // Refresh the flights list after successful cancellation
       handleViewUpcomingFlights();
       alert(data.message || 'Ticket cancelled successfully');
     } catch (error) {
