@@ -77,7 +77,7 @@ customerRoute.get('/past-flights', async (req, res) => {
     res.status(200).json(results); });
 });
 
-customerRoute.get('/search-flights', (req, res) => {
+customerRoute.get('/search-flights', async (req, res) => {
     const { tripType, source, destination, departureDate, returnDate } = req.query;
     const today = new Date();
     const depDate = new Date(departureDate);
@@ -231,7 +231,6 @@ customerRoute.delete('/cancel-ticket', async (req, res) => {
   const customerEmail = req.user.email;
 
   try {
-    // Step 1: Check that the ticket belongs to the customer and get the flight time
     const [result] = await connection.query(`
       SELECT F.Depart_Date, F.Depart_Time
       FROM Purchase P
@@ -254,12 +253,10 @@ customerRoute.delete('/cancel-ticket', async (req, res) => {
     const timeDiffInMs = flightDateTime - now;
     const hoursUntilFlight = timeDiffInMs / (1000 * 60 * 60);
 
-    // Step 2: Only allow cancel if flight is > 24 hours away
     if (hoursUntilFlight < 24) {
       return res.status(400).json({ error: 'Flight is less than 24 hours away. Cannot cancel.' });
     }
 
-    // Step 3: Delete from Purchase (make the ticket available again)
     await connection.query(`DELETE FROM Purchase WHERE Ticket_ID = ? AND Customer_Email = ?`, [ticketId, customerEmail]);
 
     return res.json({ message: 'Ticket successfully canceled. It is now available to be purchased again.' });
@@ -271,23 +268,14 @@ customerRoute.delete('/cancel-ticket', async (req, res) => {
 
 
 customerRoute.post('/rate-flight', async (req, res) => {
-  const {
-    airline_name,
-    flight_num,
-    depart_date,
-    depart_time,
-    rating,
-    comment
-  } = req.body;
-
-  const customer_email = req.user?.email; // assuming authentication middleware sets this
+  const { airline_name, flight_num, depart_date, depart_time, rating, comment } = req.body;
+  const customer_email = req.user?.email;
 
   if (!customer_email) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
   try {
-    // Step 1: Check if the user is eligible to rate this flight
     const [eligibilityCheck] = await connection.query(`
       SELECT 1
       FROM Purchase p
@@ -310,7 +298,6 @@ customerRoute.post('/rate-flight', async (req, res) => {
       return res.status(403).json({ error: 'You cannot rate a flight you haven’t flown or bought.' });
     }
 
-    // Step 2: Try to insert rating
     await connection.query(`
       INSERT INTO Ratings (
         Customer_Email, Airline_Name, Flight_Num,
