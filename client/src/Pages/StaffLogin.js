@@ -26,48 +26,38 @@ const StaffLogin = () => {
       alert("Passwords do not match!");
       return;
     }
-    if (!isLogin) {
-      fetch('/api/auth/staff-signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert('Staff created successfully!');
-          navigate('/');
-        } else {
-          alert(data.message);
+    const url = isLogin ? '/api/auth/staff-login' : '/api/auth/staff-signup';
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    })
+      .then(async response => {
+        let data;
+        try {
+          data = await response.json();
+        } catch (err) {
+          // If response is not JSON, fallback to text
+          const text = await response.text();
+          throw new Error(text || 'Unexpected error, and response is not JSON.');
         }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('Failed to create staff.');
-      });
-    } else {
-      fetch('/api/auth/staff-login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
+        if (!response.ok) {
+          throw new Error(data.message || 'Login/Signup failed');
+        }
+        if (isLogin) {
+          alert('Login successful.');
           navigate('/staff-home');
         } else {
-          alert(data.message);
+          alert('Staff created successfully!');
+          navigate('/staff-home');
         }
       })
       .catch(error => {
         console.error('Error:', error);
-        alert('Failed to login.');
+        alert(error.message || 'Failed to login/signup.');
       });
-    }    
   };
 
   const NameFields = () => <>

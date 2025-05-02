@@ -1,85 +1,88 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './FlightRatings.css';
+import React, { useState } from 'react';
+import axios from 'axios';
+import NavigationBar from '../components/staffNavBar';
 
-const FlightRatings = () => {
-  const navigate = useNavigate();
-  const [flights, setFlights] = useState([]);
-  const [selectedFlight, setSelectedFlight] = useState(null);
-  const [ratings, setRatings] = useState([]);
-  const [average, setAverage] = useState(null);
+const ViewFlightRatings = () => {
+  const [query, setQuery] = useState({
+    airline_name: '',
+    flight_num: '',
+    depart_date: '',
+    depart_time: ''
+  });
+  const [result, setResult] = useState(null);
 
-  // Load flights for selection
-  useEffect(() => {
-    fetch('/api/staff/view-flights', { credentials: 'include' })
-      .then(res => res.json())
-      .then(data => setFlights(data.flights || []))
-      .catch(err => console.error('Error fetching flights:', err));
-  }, []);
+  const handleChange = (e) => setQuery({ ...query, [e.target.name]: e.target.value });
 
-  const handleSelect = (e) => {
-    const [flightNumber, date, time] = e.target.value.split('|');
-    const flight = { flightNumber, departDate: date, departTime: time };
-    setSelectedFlight(flight);
-
-    fetch(`/api/staff/flight-ratings?flightNumber=${flightNumber}&departDate=${date}&departTime=${time}`, {
-      credentials: 'include'
-    })
-      .then(res => res.json())
-      .then(data => {
-        setAverage(data.average);
-        setRatings(data.ratings);
-      })
-      .catch(err => console.error('Error fetching ratings:', err));
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    axios.get('/api/staff/view-flight-ratings', { params: query })
+      .then(res => setResult(res.data))
+      .catch(err => alert('Error: ' + err.response?.data || err.message));
   };
 
   return (
-    <div className="flight-ratings-container">
+    <div className="container mt-5">
+      <NavigationBar />
       <h2>View Flight Ratings</h2>
-
-      <select onChange={handleSelect}>
-        <option value="">-- Select a Flight --</option>
-        {flights.map(f => (
-          <option
-            key={`${f.flight_number}-${f.departure_date}-${f.departure_time}`}
-            value={`${f.flight_number}|${f.departure_date}|${f.departure_time}`}
-          >
-            {f.flight_number} | {f.departure_date} | {f.departure_time}
-          </option>
-        ))}
-      </select>
-
-      {selectedFlight && (
-        <>
-          <h3>Average Rating: {average || 'No ratings yet'}</h3>
-          <table className="ratings-table">
-            <thead>
-              <tr>
-                <th>Rating</th>
-                <th>Comment</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ratings.length > 0 ? (
-                ratings.map((r, i) => (
-                  <tr key={i}>
-                    <td>{r.Rating}</td>
-                    <td>{r.Comment || 'No comment'}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr><td colSpan="2">No ratings for this flight.</td></tr>
-              )}
-            </tbody>
-          </table>
-        </>
+      <form onSubmit={handleSubmit}>
+        <div className="mb-3">
+          <label>Airline Name</label>
+          <input
+            type="text"
+            name="airline_name"
+            className="form-control"
+            value={query.airline_name}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label>Flight Number</label>
+          <input
+            type="text"
+            name="flight_num"
+            className="form-control"
+            value={query.flight_num}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label>Departure Date</label>
+          <input
+            type="date"
+            name="depart_date"
+            className="form-control"
+            value={query.depart_date}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label>Departure Time</label>
+          <input
+            type="time"
+            name="depart_time"
+            className="form-control"
+            value={query.depart_time}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <button type="submit" className="btn btn-secondary">Search</button>
+      </form>
+      {result && (
+        <div className="mt-4">
+          <h4>Average Rating: {result.average_rating || 'N/A'}</h4>
+          <ul>
+            {result.reviews.map((r, i) => (
+              <li key={i}>{r.Rating} stars — {r.Comment}</li>
+            ))}
+          </ul>
+        </div>
       )}
-
-      <button className="back-button" onClick={() => navigate('/staff-home')}>
-        ← Back to Staff Home
-      </button>
     </div>
   );
 };
 
-export default FlightRatings;
+export default ViewFlightRatings;

@@ -1,98 +1,223 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // ⬅️ Add this
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './ViewFlights.css';
+import NavigationBar from '../components/staffNavBar';
 
 const ViewFlights = () => {
-  const [flights, setFlights] = useState([]);
-  const [filters, setFilters] = useState({
-    startDate: '',
-    endDate: '',
-    source: '',
-    destination: ''
-  });
-
-  const navigate = useNavigate(); // ⬅️ Hook for navigation
-
-  useEffect(() => {
-    const today = new Date();
-    const future = new Date();
-    future.setDate(today.getDate() + 30);
-
-    const formatDate = (date) => date.toISOString().split('T')[0];
-
-    setFilters({
-      startDate: formatDate(today),
-      endDate: formatDate(future),
-      source: '',
-      destination: ''
+    const [flights, setFlights] = useState([]);
+    const [selectedFlight, setSelectedFlight] = useState(null);
+    const [customers, setCustomers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+    const [filters, setFilters] = useState({
+        departure: '',
+        arrival: '',
+        startDate: '',
+        endDate: '',
+        airline: ''
     });
-  }, []);
+    const navigate = useNavigate();
 
-  useEffect(() => {
-    if (filters.startDate && filters.endDate) {
-      fetch(`/api/staff/view-flights?startDate=${filters.startDate}&endDate=${filters.endDate}&source=${filters.source}&destination=${filters.destination}`, {
-        method: 'GET',
-        credentials: 'include'
-      })
-        .then(res => res.json())
-        .then(data => setFlights(data.flights || []))
-        .catch(err => console.error('Failed to load flights:', err));
-    }
-  }, [filters]);
+    useEffect(() => {
+        fetchFlights();
+    }, []);
 
-  const handleChange = (e) => {
-    setFilters(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
-  };
+    const fetchFlights = async (params = {}) => {
+        try {
+            setLoading(true);
+            // Changed endpoint to match backend staff route
+            const response = await axios.get('/api/staff/view-flights', { params });
+            setFlights(response.data.flights || response.data);
+            setError('');
+        } catch (err) {
+            setError(err.response?.data?.message || 'Failed to fetch flights');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  return (
-    <div className="view-flights-container">
-      <h2>View Flights</h2>
+    const fetchFlightCustomers = async (flightId) => {
+        try {
+            setLoading(true);
+            const response = await axios.get(`/api/flights/${flightId}/customers`);
+            setCustomers(response.data.customers);
+            setError('');
+        } catch (err) {
+            setError(err.response?.data?.message || 'Failed to fetch customers');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-      <div className="filter-section">
-        <input type="date" name="startDate" value={filters.startDate} onChange={handleChange} />
-        <input type="date" name="endDate" value={filters.endDate} onChange={handleChange} />
-        <input type="text" name="source" value={filters.source} onChange={handleChange} placeholder="Source City/Airport" />
-        <input type="text" name="destination" value={filters.destination} onChange={handleChange} placeholder="Destination City/Airport" />
-      </div>
+    const handleFilterChange = (e) => {
+        const { name, value } = e.target;
+        setFilters(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
 
-      <table className="flights-table">
-        <thead>
-          <tr>
-            <th>Flight #</th>
-            <th>Departure</th>
-            <th>Arrival</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {flights.length > 0 ? (
-            flights.map(flight => (
-              <tr key={flight.flight_number}>
-                <td>{flight.flight_number}</td>
-                <td>{flight.departure_airport}</td>
-                <td>{flight.arrival_airport}</td>
-                <td>{flight.departure_date}</td>
-                <td>{flight.departure_time}</td>
-                <td>{flight.status}</td>
-              </tr>
-            ))
-          ) : (
-            <tr><td colSpan="6">No flights found.</td></tr>
-          )}
-        </tbody>
-      </table>
+    const handleSearch = (e) => {
+        e.preventDefault();
+        fetchFlights({
+            ...filters,
+            startDate: filters.startDate || new Date().toISOString(),
+            endDate: filters.endDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+        });
+    };
 
-      {/* ⬇️ Add this button */}
-      <button className="back-button" onClick={() => navigate('/staff-home')}>
-        ← Back to Staff Home
-      </button>
-    </div>
-  );
+    const handleReset = () => {
+        setFilters({
+            departure: '',
+            arrival: '',
+            startDate: '',
+            endDate: '',
+            airline: ''
+        });
+        fetchFlights();
+    };
+
+    const handleViewCustomers = (flight) => {
+        setSelectedFlight(flight);
+        fetchFlightCustomers(flight.Flight_Num);
+    };
+
+    const formatDate = (dateString) => {
+        const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        return new Date(dateString).toLocaleString('en-US', options);
+    };
+
+    return (
+        <div className="container mt-5">
+            <NavigationBar />
+            <div className="view-flights-container">
+                <h1>Flight Schedule</h1>
+                
+                <div className="flight-filters">
+                    <form onSubmit={handleSearch}>
+                        <div className="filter-row">
+                            <div className="form-group">
+                                <label>Departure Airport</label>
+                                <input 
+                                    type="text" 
+                                    name="departure" 
+                                    value={filters.departure}
+                                    onChange={handleFilterChange}
+                                    placeholder="e.g., JFK"
+                                />
+                            </div>
+                            
+                            <div className="form-group">
+                                <label>Arrival Airport</label>
+                                <input 
+                                    type="text" 
+                                    name="arrival" 
+                                    value={filters.arrival}
+                                    onChange={handleFilterChange}
+                                    placeholder="e.g., LAX"
+                                />
+                            </div>
+                        </div>
+                        
+                        <div className="filter-row">
+                            <div className="form-group">
+                                <label>Start Date</label>
+                                <input 
+                                    type="date" 
+                                    name="startDate" 
+                                    value={filters.startDate}
+                                    onChange={handleFilterChange}
+                                />
+                            </div>
+                            
+                            <div className="form-group">
+                                <label>End Date</label>
+                                <input 
+                                    type="date" 
+                                    name="endDate" 
+                                    value={filters.endDate}
+                                    onChange={handleFilterChange}
+                                />
+                            </div>
+                        </div>
+                        
+                        <div className="filter-row">
+                            <div className="form-group">
+                                <label>Airline</label>
+                                <input 
+                                    type="text" 
+                                    name="airline" 
+                                    value={filters.airline}
+                                    onChange={handleFilterChange}
+                                    placeholder="e.g., Delta"
+                                />
+                            </div>
+                        </div>
+                        
+                        <button type="submit" className="search-button">Search Flights</button>
+                        <button type="button" className="reset-button" onClick={handleReset}>Reset</button>
+                    </form>
+                </div>
+                
+                {loading ? (
+                    <div className="loading">Loading flights...</div>
+                ) : error ? (
+                    <div className="error">{error}</div>
+                ) : (
+                    <div className="flights-list">
+                        {flights.length === 0 ? (
+                            <div className="no-flights">No flights found matching your criteria</div>
+                        ) : (
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Flight #</th>
+                                        <th>Airline</th>
+                                        <th>Departure</th>
+                                        <th>Arrival</th>
+                                        <th>Departure Time</th>
+                                        <th>Arrival Time</th>
+                                        <th>Status</th>
+                                        <th>View Customers</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {flights.map(flight => (
+                                        <tr key={flight.Flight_Num}>
+                                            <td>{flight.Flight_Num}</td>
+                                            <td>{flight.AirlineName}</td>
+                                            <td>{flight.DepartureAirport} ({flight.Departure_Airport})</td>
+                                            <td>{flight.ArrivalAirport} ({flight.Arrival_Airport})</td>
+                                            <td>{formatDate(flight.Departure_Time)}</td>
+                                            <td>{formatDate(flight.Arrival_Time)}</td>
+                                            <td className={`status-${flight.Status.toLowerCase()}`}>
+                                                {flight.Status}
+                                            </td>
+                                            <td>
+                                                <button type="button" onClick={() => handleViewCustomers(flight)}>View Customers</button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
+                )}
+                
+                {selectedFlight && (
+                    <div className="flight-customers">
+                        <h2>Customers for Flight {selectedFlight.Flight_Num}</h2>
+                        <ul>
+                            {customers.map(customer => (
+                                <li key={customer.Customer_ID}>{customer.Name}</li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
 };
 
 export default ViewFlights;

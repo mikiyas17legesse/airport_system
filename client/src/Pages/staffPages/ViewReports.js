@@ -1,75 +1,59 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
-import './ViewReports.css';
+import axios from 'axios';
+import NavigationBar from '../components/staffNavBar';
 
 const ViewReports = () => {
-  const navigate = useNavigate();
-  const [mode, setMode] = useState('last_month');
-  const [from, setFrom] = useState('');
-  const [to, setTo] = useState('');
-  const [report, setReport] = useState({ total: null, breakdown: [] });
+  const [range, setRange] = useState({ startDate: '', endDate: '' });
+  const [reports, setReports] = useState([]);
 
-  const handleFetch = () => {
-    let query = `/api/staff/view-reports?mode=${mode}`;
-    if (mode === 'range') query += `&from=${from}&to=${to}`;
+  const handleChange = (e) => setRange({ ...range, [e.target.name]: e.target.value });
 
-    fetch(query, { credentials: 'include' })
-      .then(res => res.json())
-      .then(data => setReport(data))
-      .catch(err => {
-        console.error(err);
-        alert('Failed to fetch report.');
-      });
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    axios.get('/api/staff/view-reports', { params: range })
+      .then(res => setReports(res.data))
+      .catch(err => alert('Error: ' + err.response?.data || err.message));
   };
 
   return (
-    <div className="report-container">
-      <h2>Ticket Sales Report</h2>
+    <div className="container mt-5">
+      <NavigationBar />
+      <h2>Tickets Sold Report</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="mb-3">
+          <label>Start Date</label>
+          <input type="date" className="form-control" name="startDate" value={range.startDate} onChange={handleChange} required />
+        </div>
+        <div className="mb-3">
+          <label>End Date</label>
+          <input type="date" className="form-control" name="endDate" value={range.endDate} onChange={handleChange} required />
+        </div>
+        <button className="btn btn-dark">Generate Report</button>
+      </form>
 
-      <div className="filter-options">
-        <label>
-          <input type="radio" name="mode" value="last_month" checked={mode === 'last_month'} onChange={() => setMode('last_month')} />
-          Last Month
-        </label>
-        <label>
-          <input type="radio" name="mode" value="last_year" checked={mode === 'last_year'} onChange={() => setMode('last_year')} />
-          Last Year
-        </label>
-        <label>
-          <input type="radio" name="mode" value="range" checked={mode === 'range'} onChange={() => setMode('range')} />
-          Custom Range
-        </label>
-      </div>
-
-      {mode === 'range' && (
-        <div className="date-range">
-          <input type="date" value={from} onChange={e => setFrom(e.target.value)} />
-          <input type="date" value={to} onChange={e => setTo(e.target.value)} />
+      {reports.length > 0 && (
+        <div className="mt-4">
+          <h4>Tickets Sold (Monthly)</h4>
+          <table className="table table-bordered">
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th>Month</th>
+                <th>Tickets Sold</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reports.map((row, i) => (
+                <tr key={i}>
+                  <td>{row.year}</td>
+                  <td>{row.month}</td>
+                  <td>{row.tickets_sold}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
-
-      <button onClick={handleFetch}>Generate Report</button>
-
-      {report.total !== null && (
-        <>
-          <h3>Total Tickets Sold: {report.total}</h3>
-
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={report.breakdown}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="tickets_sold" fill="#007bff" />
-            </BarChart>
-          </ResponsiveContainer>
-        </>
-      )}
-
-      <button className="back-button" onClick={() => navigate('/staff-home')}>
-        ← Back to Staff Home
-      </button>
     </div>
   );
 };
