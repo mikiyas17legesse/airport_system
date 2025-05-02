@@ -19,12 +19,11 @@ export function AuthProvider({ children }) {
     const {token, ...user} = userData;
     setUser(user);
     localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem('user', JSON.stringify(userData));
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('token');
     localStorage.removeItem('user');
   };
 
@@ -36,4 +35,3 @@ export function AuthProvider({ children }) {
 }
 
 export const useAuth = () => useContext(AuthContext);
-export const getToken = () => localStorage.getItem('token');

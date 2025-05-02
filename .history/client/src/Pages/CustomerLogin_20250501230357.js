@@ -50,17 +50,24 @@ const CustomerLogin = () => {
         alert(error.response?.data?.message || 'Login failed');
       });
     } else {
-      api.post('/auth/customer-signup', formData)
-      .then(response => {
-        if (response.data.success) {
+      fetch('/api/auth/customer-signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) { // Successful signup
           navigate('/customer-login');
         } else {
-          alert(response.data.message);
+          alert(data.message);
         }
       })
       .catch(error => {
         console.error('Error:', error);
-        alert(error.response?.data?.message || 'Failed to create customer.');
+        alert('Failed to create customer.');
       });
     }
   };

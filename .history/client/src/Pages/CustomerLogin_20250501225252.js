@@ -35,32 +35,43 @@ const CustomerLogin = () => {
         email: formData.email,
         password: formData.password
       })
-      .then(response => {
-        const { token, ...userData } = response.data; 
-        const user = {
-          ...userData,
-          firstName: userData.firstName || '',
-          lastName: userData.lastName || ''
-        };
-        login({ token, ...user });
-        navigate('/home');
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert(error.response?.data?.message || 'Login failed');
-      });
-    } else {
-      api.post('/auth/customer-signup', formData)
-      .then(response => {
-        if (response.data.success) {
-          navigate('/customer-login');
+      .then(async response => {
+        const data = await response.json();
+        if (response.ok) {
+          const userData = {
+            ...data,
+            firstName: data.firstName || '',
+            lastName: data.lastName || ''
+          };
+          login(userData);
+          navigate('/home');
         } else {
-          alert(response.data.message);
+          alert(data.message || 'Login failed');
         }
       })
       .catch(error => {
         console.error('Error:', error);
-        alert(error.response?.data?.message || 'Failed to create customer.');
+        alert('Failed to login: ' + error.message);
+      });
+    } else {
+      fetch('/api/auth/customer-signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) { // Successful signup
+          navigate('/customer-login');
+        } else {
+          alert(data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to create customer.');
       });
     }
   };

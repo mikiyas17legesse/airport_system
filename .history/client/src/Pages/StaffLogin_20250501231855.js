@@ -46,17 +46,29 @@ const StaffLogin = () => {
         alert(error.response?.data?.message || 'Login failed');
       });
     } else { // Signup
-      api.post('/auth/staff-signup', formData)
-      .then(response => {
-        if (response.data.success) {
-          navigate('/staff-login');
+      fetch('/api/auth/staff-signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData
+        })
+      })
+      .then(async response => {
+        const data = await response.json();
+        if (response.ok) {
+          if (data.success) {
+            alert('Staff created successfully!');
+            navigate('/');
+          } else {
+            alert(data.message);
+          }
         } else {
-          alert(response.data.message);
+          alert(data.message || 'Failed to create staff');
         }
       })
       .catch(error => {
         console.error('Error:', error);
-        alert(error.response?.data?.message || 'Failed to create staff.');
+        alert('Failed to create staff: ' + error.message);
       });
     }
   };

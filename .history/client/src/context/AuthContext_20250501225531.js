@@ -28,6 +28,8 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('user');
   };
 
+  const getToken = () => localStorage.getItem('token');
+
   return (
     <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
