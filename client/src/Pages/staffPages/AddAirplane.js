@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import api from '../../api/authHeaders';
-import NavigationBar from '../components/staffNavBar';
+import StaffLayout from './StaffLayout';
+import './AddAirplane.css'; // Optional for custom styles
 
 const AddAirplane = () => {
   const [data, setData] = useState({
@@ -12,89 +13,54 @@ const AddAirplane = () => {
     manufacturing_date: ''
   });
 
-  const handleChange = (e) => setData({ ...data, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setData({ ...data, [e.target.name]: e.target.value });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    api.post('/staff/add-airplane', data)
-      .then(() => alert('Airplane added successfully.'))
-      .catch((err) => alert('Error: ' + err.response?.data || err.message));
+    api
+      .post('/staff/add-airplane', data)
+      .then(() => alert('✅ Airplane added successfully.'))
+      .catch((err) =>
+        alert('❌ Error: ' + (err.response?.data || err.message))
+      );
   };
 
   return (
-    <div className="container mt-5">
-      <NavigationBar />
-      <h2>Add New Airplane</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label className="form-label">Airline Name</label>
-          <input
-            type="text"
-            className="form-control"
-            name="airline_name"
-            value={data.airline_name}
-            onChange={handleChange}
-            required
-          />
+    <StaffLayout>
+      <div className="container mt-5">
+        <div className="card shadow p-4 mx-auto" style={{ maxWidth: '600px' }}>
+          <h2 className="mb-4 text-center text-primary">Add New Airplane</h2>
+          <form onSubmit={handleSubmit}>
+            {[
+              { label: 'Airline Name', name: 'airline_name', type: 'text' },
+              { label: 'Airplane ID', name: 'airplane_id', type: 'text' },
+              { label: 'Number of Seats', name: 'num_of_seats', type: 'number' },
+              { label: 'Manufacturer', name: 'manufactures', type: 'text' },
+              { label: 'Model Number', name: 'model_num', type: 'text' },
+              { label: 'Manufacturing Date', name: 'manufacturing_date', type: 'date' }
+            ].map((field) => (
+              <div className="mb-3" key={field.name}>
+                <label className="form-label">{field.label}</label>
+                <input
+                  type={field.type}
+                  className="form-control"
+                  name={field.name}
+                  value={data[field.name]}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            ))}
+            <div className="text-center">
+              <button type="submit" className="btn btn-success px-4">
+                Add Airplane
+              </button>
+            </div>
+          </form>
         </div>
-        <div className="mb-3">
-          <label className="form-label">Airplane ID</label>
-          <input
-            type="text"
-            className="form-control"
-            name="airplane_id"
-            value={data.airplane_id}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Number of Seats</label>
-          <input
-            type="number"
-            className="form-control"
-            name="num_of_seats"
-            value={data.num_of_seats}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Manufacturer</label>
-          <input
-            type="text"
-            className="form-control"
-            name="manufactures"
-            value={data.manufactures}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Model Number</label>
-          <input
-            type="text"
-            className="form-control"
-            name="model_num"
-            value={data.model_num}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Manufacturing Date</label>
-          <input
-            type="date"
-            className="form-control"
-            name="manufacturing_date"
-            value={data.manufacturing_date}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <button type="submit" className="btn btn-success">Add Airplane</button>
-      </form>
-    </div>
+      </div>
+    </StaffLayout>
   );
 };
 

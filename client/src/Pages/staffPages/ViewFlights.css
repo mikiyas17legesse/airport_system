@@ -1,26 +1,10 @@
-.view-flights-container {
-    padding: 2rem;
-  }
-  
-  .filter-section {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-  }
-  
-  .flights-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .flights-table th, .flights-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: center;
-  }
-  
-  .flights-table th {
-    background-color: #007bff;
-    color: white;
-  }
-  
+.view-flights-container h1 {
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.badge {
+  text-transform: capitalize;
+  font-size: 0.9rem;
+}

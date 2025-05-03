@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api/authHeaders';
 import './ViewFlights.css';
-import NavigationBar from '../components/staffNavBar';
+import StaffLayout from './StaffLayout'; // NEW
 
 const ViewFlights = () => {
     const [flights, setFlights] = useState([]);
@@ -87,8 +87,8 @@ const ViewFlights = () => {
     };
 
     return (
+        <StaffLayout>
         <div className="container mt-5">
-            <NavigationBar />
             <div className="view-flights-container">
                 <h1>Flight Schedule</h1>
                 
@@ -215,6 +215,7 @@ const ViewFlights = () => {
                 )}
             </div>
         </div>
+        </StaffLayout>
     );
 };
 

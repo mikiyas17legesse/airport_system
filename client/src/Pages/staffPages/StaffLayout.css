@@ -1,0 +1,8 @@
+.staff-layout {
+  display: flex;
+  flex-direction: column;
+}
+
+.staff-page-content {
+  padding: 2rem;
+}

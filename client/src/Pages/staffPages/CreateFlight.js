@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import api from '../../api/authHeaders';
-import NavigationBar from '../components/staffNavBar';
+import StaffLayout from './StaffLayout';
 
 const CreateFlight = () => {
   const [formData, setFormData] = useState({
@@ -17,150 +17,75 @@ const CreateFlight = () => {
     status: ''
   });
 
-  const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-  };
+  const handleChange = (e) =>
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    api.post('/staff/create-flight', formData)
-      .then(() => alert('Flight created successfully.'))
-      .catch(err => alert('Error: ' + err.response?.data || err.message));
+    api
+      .post('/staff/create-flight', formData)
+      .then(() => alert('✅ Flight created successfully.'))
+      .catch((err) =>
+        alert('❌ Error: ' + (err.response?.data || err.message))
+      );
   };
 
+  const inputFields = [
+    { label: 'Airline Name', name: 'airline_name', type: 'text' },
+    { label: 'Flight Number', name: 'flight_num', type: 'text' },
+    { label: 'Departure Date', name: 'depart_date', type: 'date' },
+    { label: 'Departure Time', name: 'depart_time', type: 'time' },
+    { label: 'Arrival Date', name: 'arrival_date', type: 'date' },
+    { label: 'Arrival Time', name: 'arrival_time', type: 'time' },
+    { label: 'Base Price', name: 'base_price', type: 'number' },
+    { label: 'Airplane ID', name: 'airplane_id', type: 'text' },
+    { label: 'Departure Airport', name: 'departure_airport', type: 'text' },
+    { label: 'Arrival Airport', name: 'arrival_airport', type: 'text' }
+  ];
+
   return (
-    <div className="container mt-5">
-      <NavigationBar />
-      <h2>Create New Flight</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label className="form-label">Airline Name</label>
-          <input
-            type="text"
-            className="form-control"
-            name="airline_name"
-            value={formData.airline_name}
-            onChange={handleChange}
-            required
-          />
+    <StaffLayout>
+      <div className="container mt-5">
+        <div className="card shadow p-4 mx-auto" style={{ maxWidth: '650px' }}>
+          <h2 className="mb-4 text-center text-primary">Create New Flight</h2>
+          <form onSubmit={handleSubmit}>
+            {inputFields.map((field) => (
+              <div className="mb-3" key={field.name}>
+                <label className="form-label">{field.label}</label>
+                <input
+                  type={field.type}
+                  className="form-control"
+                  name={field.name}
+                  value={formData[field.name]}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            ))}
+            <div className="mb-4">
+              <label className="form-label">Status</label>
+              <select
+                className="form-control"
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select Status</option>
+                <option value="On-Time">On-Time</option>
+                <option value="Delayed">Delayed</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+            <div className="text-center">
+              <button type="submit" className="btn btn-primary px-4">
+                Create Flight
+              </button>
+            </div>
+          </form>
         </div>
-        <div className="mb-3">
-          <label className="form-label">Flight Number</label>
-          <input
-            type="text"
-            className="form-control"
-            name="flight_num"
-            value={formData.flight_num}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Departure Date</label>
-          <input
-            type="date"
-            className="form-control"
-            name="depart_date"
-            value={formData.depart_date}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Departure Time</label>
-          <input
-            type="time"
-            className="form-control"
-            name="depart_time"
-            value={formData.depart_time}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Arrival Date</label>
-          <input
-            type="date"
-            className="form-control"
-            name="arrival_date"
-            value={formData.arrival_date}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Arrival Time</label>
-          <input
-            type="time"
-            className="form-control"
-            name="arrival_time"
-            value={formData.arrival_time}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Base Price</label>
-          <input
-            type="number"
-            className="form-control"
-            name="base_price"
-            value={formData.base_price}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Airplane ID</label>
-          <input
-            type="text"
-            className="form-control"
-            name="airplane_id"
-            value={formData.airplane_id}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Departure Airport</label>
-          <input
-            type="text"
-            className="form-control"
-            name="departure_airport"
-            value={formData.departure_airport}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Arrival Airport</label>
-          <input
-            type="text"
-            className="form-control"
-            name="arrival_airport"
-            value={formData.arrival_airport}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Status</label>
-          <select
-            className="form-control"
-            name="status"
-            value={formData.status}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Status</option>
-            <option value="On-Time">On-Time</option>
-            <option value="Delayed">Delayed</option>
-            <option value="Cancelled">Cancelled</option>
-          </select>
-        </div>
-        <button type="submit" className="btn btn-primary">Create Flight</button>
-      </form>
-    </div>
+      </div>
+    </StaffLayout>
   );
 };
 

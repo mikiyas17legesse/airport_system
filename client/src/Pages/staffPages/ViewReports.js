@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
-import api from '../../api/authHeaders';
-import NavigationBar from '../components/staffNavBar';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import StaffLayout from './StaffLayout';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
+import './ViewReports.css';
 
 const ViewReports = () => {
   const [range, setRange] = useState({ startDate: '', endDate: '' });
@@ -10,26 +13,15 @@ const ViewReports = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    api.get('/staff/view-reports', { params: range })
+    axios.get('/api/staff/view-reports', { params: range })
       .then(res => setReports(res.data))
       .catch(err => alert('Error: ' + err.response?.data || err.message));
   };
 
   return (
-    <div className="container mt-5">
-      <NavigationBar />
-      <h2>Tickets Sold Report</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label>Start Date</label>
-          <input type="date" className="form-control" name="startDate" value={range.startDate} onChange={handleChange} required />
-        </div>
-        <div className="mb-3">
-          <label>End Date</label>
-          <input type="date" className="form-control" name="endDate" value={range.endDate} onChange={handleChange} required />
-        </div>
-        <button className="btn btn-dark">Generate Report</button>
-      </form>
+    <StaffLayout>
+    <div className="report-container">
+      <h2>Ticket Sales Report</h2>
 
       {reports.length > 0 && (
         <div className="mt-4">
@@ -55,6 +47,7 @@ const ViewReports = () => {
         </div>
       )}
     </div>
+    </StaffLayout>
   );
 };
 

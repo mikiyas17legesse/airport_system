@@ -1,14 +1,21 @@
-.logout-button {
-  margin-top: 2rem;
-  padding: 10px 20px;
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  cursor: pointer;
+.dashboard-container {
+  min-height: 100vh;
+  background-color: #f8f9fa;
 }
 
-.logout-button:hover {
-  background-color: #c82333;
+.dashboard-content {
+  padding: 2rem;
+}
+
+.quick-link-card {
+  border-radius: 0.75rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background-color: #ffffff;
+}
+
+.quick-link-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  background-color: #f1faff;
+  cursor: pointer;
 }

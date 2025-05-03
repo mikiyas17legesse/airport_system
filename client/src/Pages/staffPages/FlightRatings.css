@@ -1,43 +1,8 @@
-.flight-ratings-container {
-    max-width: 700px;
-    margin: 2rem auto;
-    padding: 2rem;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-  }
-  
-  select {
-    margin-top: 1rem;
-    padding: 0.5rem;
-    font-size: 16px;
-    width: 100%;
-  }
-  
-  .ratings-table {
-    margin-top: 1.5rem;
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .ratings-table th, .ratings-table td {
-    border: 1px solid #ddd;
-    padding: 0.75rem;
-    text-align: left;
-  }
-  
-  .ratings-table th {
-    background-color: #007bff;
-    color: white;
-  }
-  
-  .back-button {
-    margin-top: 1.5rem;
-    padding: 10px 20px;
-    background: #6c757d;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-  
+.card {
+  border-radius: 1rem;
+}
+
+input:focus {
+  border-color: #6c757d;
+  box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25);
+}
