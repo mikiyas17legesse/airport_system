@@ -76,7 +76,8 @@ const Ratings = () => {
       
       {flights.length === 0 ? (
         <div className="no-flights">
-          <h4>No flights available for rating</h4>
+          <img src="/images/empty-state.svg" alt="No flights" className="empty-icon" />
+          <h3>No flights available for rating</h3>
           <p>You've either rated all your past flights or haven't completed any flights yet.</p>
         </div>
       ) : (

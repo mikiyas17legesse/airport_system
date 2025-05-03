@@ -81,7 +81,7 @@ customerRoute.get('/past-flights', async (req, res) => {
       if (err) return res.status(500).json({ message: 'Database error.' });
       res.status(200).json(results);
   });
-});
+});v
 
 customerRoute.get('/search-flights', async (req, res) => {
     const { tripType, source, destination, departureDate, returnDate } = req.query;

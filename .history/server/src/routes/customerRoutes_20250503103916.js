@@ -41,6 +41,8 @@ customerRoute.get('/view-my-flights', async (req, res) => {
     res.status(200).json(results); });
 });
 
+// In the past-flights query, we should add a LEFT JOIN to check for existing ratings
+// and filter them out
 customerRoute.get('/past-flights', async (req, res) => {
   const date = new Date();
   const { email } = req.query;
@@ -81,7 +83,7 @@ customerRoute.get('/past-flights', async (req, res) => {
       if (err) return res.status(500).json({ message: 'Database error.' });
       res.status(200).json(results);
   });
-});
+});v
 
 customerRoute.get('/search-flights', async (req, res) => {
     const { tripType, source, destination, departureDate, returnDate } = req.query;

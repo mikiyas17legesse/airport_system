@@ -1,0 +1,161 @@
+.rating-label, .comment-label {
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.rating-select {
+  font-size: 1.1rem;
+  padding: 6px 12px;
+  margin-left: 10px;
+  min-width: 70px;
+  border-radius: 20px;
+}
+
+.comment-input {
+  font-size: 1.1rem;
+  padding: 6px 12px;
+  margin-left: 10px;
+  width: 70%;
+  min-width: 250px;
+  max-width: 500px;
+}
+
+.flight-rating-container {
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  margin: 20px;
+  padding: 20px;
+  background: #fafbfc;
+  transition: box-shadow 0.2s;
+}
+
+.flight-rating-container:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+}
+
+.rating-submit-btn {
+  background: linear-gradient(0deg, #1565f9, #1565f9);
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  padding: 10px 28px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+  transition: background 0.2s, box-shadow 0.2s;
+  margin-top: 10px;
+}
+
+.rating-submit-btn:hover {
+  background: linear-gradient(90deg, #38b6ff, #4f8cff);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.10);
+}
+
+.rating-label, .comment-label {
+  margin-bottom: 14px;
+}
+
+.ratings-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.ratings-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.ratings-subtitle {
+  color: #666;
+  margin-top: 10px;
+}
+
+.no-flights {
+  text-align: center;
+  padding: 40px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.empty-icon {
+  width: 100px;
+  opacity: 0.7;
+  margin-bottom: 20px;
+}
+
+.flights-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.flight-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 20px;
+}
+
+.flight-info h3 {
+  margin-top: 0;
+  color: #2c3e50;
+}
+
+.flight-meta {
+  display: flex;
+  gap: 15px;
+  color: #666;
+  margin: 10px 0;
+}
+
+.rating-form {
+  margin-top: 15px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.rating-select, .comment-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.comment-input {
+  resize: vertical;
+}
+
+.submit-btn {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.submit-btn:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+}
+
+.status-message {
+  margin-top: 10px;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.status-message.success {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-message.error {
+  background: #f8d7da;
+  color: #721c24;
+}

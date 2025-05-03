@@ -72,11 +72,13 @@ const Ratings = () => {
       <NavigationBar />
       <div className="ratings-header">
         <h1>Rate Your Past Flights</h1>
+        <p className="ratings-subtitle">Share your experience to help us improve</p>
       </div>
       
       {flights.length === 0 ? (
         <div className="no-flights">
-          <h4>No flights available for rating</h4>
+          <img src="/images/empty-state.svg" alt="No flights" className="empty-icon" />
+          <h3>No flights available for rating</h3>
           <p>You've either rated all your past flights or haven't completed any flights yet.</p>
         </div>
       ) : (
