@@ -1,0 +1,14 @@
+.create-flight-root {
+  min-height: 100vh;
+  padding-top: 75px;
+  display: flex;
+  flex-direction: column;
+}
+
+.create-flight-content {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
