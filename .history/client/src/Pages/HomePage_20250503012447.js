@@ -8,6 +8,7 @@ const HomePage = () => {
   const { user } = useAuth();
   const [flights, setFlights] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [hasLoadedFlights, setHasLoadedFlights] = useState(false);
 
   const handleViewUpcomingFlights = async () => {
     try {
@@ -42,10 +43,6 @@ const HomePage = () => {
   };
 
   const handleCancelTicket = async (ticketId) => {
-    console.log('Preparing cancel request with:', {
-      ticketId,
-      time: new Date().toISOString()
-    });
     if (!ticketId) {
       alert('No ticket selected');
       console.error('Ticket ID is required');
@@ -95,7 +92,8 @@ const HomePage = () => {
                 {loading ? 'Loading...' : 'View My Upcoming Flights'}
               </button>
             </div>
-            {flights.length === 0 && (
+            
+            {hasLoadedFlights && flights.length === 0 && (
               <div className="no-flights-message">
                 <p>You don't have any upcoming flights booked yet.</p>
               </div>
@@ -109,22 +107,18 @@ const HomePage = () => {
                     <h3>{flight.Departure_Airport_Name} → {flight.Arrival_Airport_Name}</h3>
                     <p>Departure: {formatDate(flight.Depart_Date)} at {formatTime(flight.Depart_Time)}</p>
                     <div className="flight-actions">
-                    <button 
+                      <button 
                         className="cancel-btn"
                         onClick={() => {
-                            if (!flight.Ticket_ID) {
-                                console.error('Missing Ticket_ID in flight:', flight);
-                                return;
-                            }
-                            console.log('Sending cancellation for:', {
-                                ticketId: flight.Ticket_ID,
-                                flight: `${flight.Airline_Name} ${flight.Flight_Num}`,
-                                user: user.email
-                            });
-                            handleCancelTicket(flight.Ticket_ID);
+                          console.log('Attempting to cancel flight:', {
+                            ticketId: flight.Ticket_ID,
+                            flightNum: flight.Flight_Num,
+                            departDate: flight.Depart_Date
+                          });
+                          handleCancelTicket(flight.Ticket_ID);
                         }}
                         disabled={!isFlightCancellable(flight.Depart_Date, flight.Depart_Time)}
-                        >
+                      >
                         Cancel Flight
                       </button>
                     </div>

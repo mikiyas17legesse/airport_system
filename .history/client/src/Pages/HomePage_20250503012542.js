@@ -8,6 +8,7 @@ const HomePage = () => {
   const { user } = useAuth();
   const [flights, setFlights] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [hasLoadedFlights, setHasLoadedFlights] = useState(false);
 
   const handleViewUpcomingFlights = async () => {
     try {
@@ -42,10 +43,6 @@ const HomePage = () => {
   };
 
   const handleCancelTicket = async (ticketId) => {
-    console.log('Preparing cancel request with:', {
-      ticketId,
-      time: new Date().toISOString()
-    });
     if (!ticketId) {
       alert('No ticket selected');
       console.error('Ticket ID is required');
@@ -95,7 +92,8 @@ const HomePage = () => {
                 {loading ? 'Loading...' : 'View My Upcoming Flights'}
               </button>
             </div>
-            {flights.length === 0 && (
+            
+            {hasLoadedFlights && flights.length === 0 && (
               <div className="no-flights-message">
                 <p>You don't have any upcoming flights booked yet.</p>
               </div>

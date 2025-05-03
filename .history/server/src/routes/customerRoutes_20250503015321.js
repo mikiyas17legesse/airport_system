@@ -182,21 +182,28 @@ customerRoute.delete('/cancel-ticket', (req, res) => {
   const customerEmail = req.user?.email;
 
   if (!ticketId || !customerEmail) {
+    console.error('Missing required fields:', { ticketId, customerEmail });
     return res.status(400).json({ error: 'Ticket ID and user email are required' });
   }
 
+  console.log('Starting cancellation for:', { ticketId, customerEmail });
+
+  // 1. Verify purchase exists
   connection.query(
     'SELECT * FROM Purchase WHERE Ticket_ID = ? AND Customer_Email = ?',
     [ticketId, customerEmail],
     (err, purchaseResults) => {
       if (err) {
+        console.error('Database error during purchase verification:', err);
         return res.status(500).json({ error: 'Database error' });
       }
 
       if (!purchaseResults || purchaseResults.length === 0) {
+        console.error('Purchase verification failed for ticket:', ticketId);
         return res.status(403).json({ error: 'Ticket not found in your purchases' });
       }
 
+      // 2. Verify flight information
       connection.query(
         `SELECT F.Depart_Date, F.Depart_Time
          FROM Flight F
@@ -206,44 +213,56 @@ customerRoute.delete('/cancel-ticket', (req, res) => {
         [ticketId],
         (err, flightResults) => {
           if (err) {
+            console.error('Database error during flight verification:', err);
             return res.status(500).json({ error: 'Database error' });
           }
 
           if (!flightResults || flightResults.length === 0) {
+            console.error('Flight data not found for ticket:', ticketId);
             return res.status(404).json({ error: 'Flight information not found' });
           }
 
+          // Begin transaction
           connection.beginTransaction(err => {
             if (err) {
+              console.error('Error starting transaction:', err);
               return res.status(500).json({ error: 'Database error' });
             }
+
+            // 3. Delete from Purchase table
             connection.query(
               'DELETE FROM Purchase WHERE Ticket_ID = ? AND Customer_Email = ?',
               [ticketId, customerEmail],
               (err, purchaseDeleteResult) => {
                 if (err) {
                   return connection.rollback(() => {
+                    console.error('Purchase deletion error:', err);
                     res.status(500).json({ error: 'Database error' });
                   });
                 }
 
+                // 4. Delete from Ticket table
                 connection.query(
                   'DELETE FROM Ticket WHERE Ticket_ID = ?',
                   [ticketId],
                   (err, ticketDeleteResult) => {
                     if (err) {
                       return connection.rollback(() => {
+                        console.error('Ticket deletion error:', err);
                         res.status(500).json({ error: 'Database error' });
                       });
                     }
 
+                    // Commit transaction if both deletions succeeded
                     connection.commit(err => {
                       if (err) {
                         return connection.rollback(() => {
+                          console.error('Commit error:', err);
                           res.status(500).json({ error: 'Database error' });
                         });
                       }
 
+                      console.log('Successfully canceled ticket:', ticketId);
                       return res.json({ 
                         message: 'Ticket canceled successfully',
                         ticketId: ticketId
@@ -269,8 +288,16 @@ customerRoute.post('/rate-flight', (req, res) => {
   }
 
   const formattedDepartDate = new Date(depart_date).toISOString().split('T')[0];
+  
+  console.log('Checking purchase for:', {
+    customer_email,
+    airline_name, 
+    flight_num,
+    formattedDepartDate,
+    depart_time
+  });
 
-
+  // First query to check eligibility
   connection.query(`
     SELECT 1
     FROM Purchase p

@@ -95,6 +95,7 @@ const HomePage = () => {
                 {loading ? 'Loading...' : 'View My Upcoming Flights'}
               </button>
             </div>
+            
             {flights.length === 0 && (
               <div className="no-flights-message">
                 <p>You don't have any upcoming flights booked yet.</p>
