@@ -43,7 +43,7 @@ const FlightTable = ({ flights, title, onBookFlight }) => {
           [selectedFlight.Flight_Num]: response.ticketId
         }));
         
-        alert(`Booking confirmed! Check your home page confirmation`);
+        alert(`Booking confirmed! Check your home page for your ticket ID.`);
         setShowModal(false);
       } catch (error) {
         console.error('Booking failed:', error);

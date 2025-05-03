@@ -129,21 +129,8 @@ customerRoute.post('/purchase-ticket', (req, res) => {
       !Depart_Time || !cardNum || !expDate || !nameOnCard || !cardType) {
     return res.status(400).json({ error: 'All fields are required' });
   }
-  // Validate expiration date format and future date
   if (cardNum.length !== 16) return res.status(400).json({ error: 'Invalid card number' });
-  if (expDate.length !== 5 || !expDate.includes('/')) {
-    return res.status(400).json({ error: 'Invalid expiration date format (use MM/YY)' });
-  }
-
-  const [month, year] = expDate.split('/');
-  const expMonth = parseInt(month);
-  const expYear = 2000 + parseInt(year);
-  const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
-  const currentMonth = currentDate.getMonth() + 1;
-
-  if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth))
-    return res.status(400).json({ error: 'Card has expired' });
+  if (expDate.length !== 5) return res.status(400).json({ error: 'Invalid expiration date' });
 
   const formatExpDate = (mmYY) => {
     const [month, year] = mmYY.split('/');

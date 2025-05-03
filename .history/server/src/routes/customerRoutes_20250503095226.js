@@ -142,8 +142,9 @@ customerRoute.post('/purchase-ticket', (req, res) => {
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth() + 1;
 
-  if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth))
+  if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
     return res.status(400).json({ error: 'Card has expired' });
+  }
 
   const formatExpDate = (mmYY) => {
     const [month, year] = mmYY.split('/');
