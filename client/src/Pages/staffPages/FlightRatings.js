@@ -10,8 +10,28 @@ const ViewFlightRatings = () => {
     depart_time: ''
   });
   const [result, setResult] = useState(null);
+  const [touched, setTouched] = useState({
+    airline_name: false,
+    flight_num: false,
+    depart_date: false,
+    depart_time: false
+  });
+
+  // Validation helpers
+  const validateAirline = (name) => /^[a-zA-Z\s]{2,}$/.test(name);
+  const validateFlightNum = (num) => /^\d{1,6}$/.test(num);
+  const validateDate = (date) => Boolean(date);
+  const validateTime = (time) => /^\d{2}:\d{2}$/.test(time);
+
+  const isValid = {
+    airline_name: validateAirline(query.airline_name),
+    flight_num: validateFlightNum(query.flight_num),
+    depart_date: validateDate(query.depart_date),
+    depart_time: validateTime(query.depart_time)
+  };
 
   const handleChange = (e) => setQuery({ ...query, [e.target.name]: e.target.value });
+  const handleBlur = (e) => setTouched({ ...touched, [e.target.name]: true });
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -21,7 +41,7 @@ const ViewFlightRatings = () => {
   };
 
   return (
-    <div className="container mt-5">
+    <div className="container mt-5" style={{ paddingTop: '75px' }}>
       <NavigationBar />
       <h2>View Flight Ratings</h2>
       <form onSubmit={handleSubmit}>
@@ -33,8 +53,16 @@ const ViewFlightRatings = () => {
             className="form-control"
             value={query.airline_name}
             onChange={handleChange}
+            onBlur={handleBlur}
             required
           />
+          {touched.airline_name && (
+            isValid.airline_name ? (
+              <div style={{ color: 'green' }}>Valid Input</div>
+            ) : (
+              <div style={{ color: 'red' }}>Enter a valid airline name (letters only)</div>
+            )
+          )}
         </div>
         <div className="mb-3">
           <label>Flight Number</label>
@@ -44,8 +72,16 @@ const ViewFlightRatings = () => {
             className="form-control"
             value={query.flight_num}
             onChange={handleChange}
+            onBlur={handleBlur}
             required
           />
+          {touched.flight_num && (
+            isValid.flight_num ? (
+              <div style={{ color: 'green' }}>Valid Input</div>
+            ) : (
+              <div style={{ color: 'red' }}>Enter a valid flight number (digits only)</div>
+            )
+          )}
         </div>
         <div className="mb-3">
           <label>Departure Date</label>
@@ -55,8 +91,16 @@ const ViewFlightRatings = () => {
             className="form-control"
             value={query.depart_date}
             onChange={handleChange}
+            onBlur={handleBlur}
             required
           />
+          {touched.depart_date && (
+            isValid.depart_date ? (
+              <div style={{ color: 'green' }}>Valid Input</div>
+            ) : (
+              <div style={{ color: 'red' }}>Select a date</div>
+            )
+          )}
         </div>
         <div className="mb-3">
           <label>Departure Time</label>
@@ -66,8 +110,16 @@ const ViewFlightRatings = () => {
             className="form-control"
             value={query.depart_time}
             onChange={handleChange}
+            onBlur={handleBlur}
             required
           />
+          {touched.depart_time && (
+            isValid.depart_time ? (
+              <div style={{ color: 'green' }}>Valid Input</div>
+            ) : (
+              <div style={{ color: 'red' }}>Enter a valid time (hh:mm)</div>
+            )
+          )}
         </div>
         <button type="submit" className="btn btn-secondary">Search</button>
       </form>

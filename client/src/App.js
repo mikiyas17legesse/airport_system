@@ -16,6 +16,7 @@ import AddAirplane from './pages/staffPages/AddAirplane';
 import AddAirport from './pages/staffPages/AddAirport';
 import FlightRatings from './pages/staffPages/FlightRatings';
 import ViewReports from './pages/staffPages/ViewReports';
+import ViewFlightCustomers from './pages/staffPages/ViewFlightCustomers';
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
           <Route path="/add-airport" element={<AddAirport />} />
           <Route path="/flight-ratings" element={<FlightRatings />} />
           <Route path="/view-reports" element={<ViewReports />} />
+          <Route path="/staff/view-flights/:flightNum/customers" element={<ViewFlightCustomers />} />
         </Routes>
       </div>
     </BrowserRouter>

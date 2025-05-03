@@ -16,7 +16,7 @@ const ViewReports = () => {
   };
 
   return (
-    <div className="container mt-5">
+    <div className="container mt-5" style={{ paddingTop: '75px' }}>
       <NavigationBar />
       <h2>Tickets Sold Report</h2>
       <form onSubmit={handleSubmit}>

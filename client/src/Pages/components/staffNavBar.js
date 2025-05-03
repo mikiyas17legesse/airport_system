@@ -1,11 +1,15 @@
 import Container from 'react-bootstrap/Container';
 import { Navbar, Nav } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 
-const NavigationBar = () => {
+const NavigationBar = ({ showLogout = true }) => {
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    navigate('/');
+  };
   return (
-    <Navbar bg="primary" data-bs-theme="dark">
+    <Navbar bg="primary" data-bs-theme="dark" expand="lg" fixed="top">
       <Container>
         <Navbar.Brand as={Link} to="/staff-home">Airline Management System</Navbar.Brand>
         <Nav className="me-auto">
@@ -17,6 +21,11 @@ const NavigationBar = () => {
           <Nav.Link className="nav-link-spacing" as={Link} to="/flight-ratings">View Flight Ratings</Nav.Link>
           <Nav.Link className="nav-link-spacing" as={Link} to="/view-reports">View Reports</Nav.Link>
         </Nav>
+        {showLogout && (
+          <Nav className="align-items-center ms-3">
+            <Nav.Link className="nav-link-spacing" onClick={handleLogout} style={{color: 'white', fontWeight: 'bold', marginLeft: '12px'}}>Logout</Nav.Link>
+          </Nav>
+        )}
       </Container>
     </Navbar>
   );
