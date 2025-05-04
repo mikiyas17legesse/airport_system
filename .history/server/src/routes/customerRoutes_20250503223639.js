@@ -7,47 +7,8 @@ customerRoute.get('/view-my-flights', async (req, res) => {
     const date = new Date();
     const { email } = req.query;
 
-    connection.query(`
-        SELECT
-            T.Ticket_ID,
-            F.Airline_Name,
-            F.Flight_Num,
-            F.Depart_Date,
-            F.Depart_Time,
-            F.Arrival_Date,
-            F.Arrival_Time,
-            F.Status,
-            F.Base_Price,
-            T.Sold_Price,
-            DA.Name AS Departure_Airport_Name,
-            DA.City AS Departure_City,
-            AA.Name AS Arrival_Airport_Name,
-            AA.City AS Arrival_City
-        FROM
-            Customer C
-            JOIN Purchase P ON C.Email = P.Customer_Email
-            JOIN Ticket T ON P.Ticket_ID = T.Ticket_ID
-            JOIN Flight F ON T.Airline_Name = F.Airline_Name
-                 AND T.Flight_Num = F.Flight_Num
-                 AND T.Depart_Date = F.Depart_Date
-                 AND T.Depart_Time = F.Depart_Time
-            JOIN Airport DA ON F.Departure_Airport = DA.Code
-            JOIN Airport AA ON F.Arrival_Airport = AA.Code
-        WHERE
-            C.Email = ?
-            AND F.Depart_Date >= ?
-    `, [email, date], (err, results) => {
-    if (err) return res.status(500).json({ message: 'Database error.' });
-    res.status(200).json(results); });
-});
-
-customerRoute.get('/past-flights', async (req, res) => {
-  const today = new Date();
-  const formattedDate = today.toISOString().split('T')[0]; 
-  const { email } = req.query;
-  
-  connection.query(`
-      SELECT DISTINCT
+      connection.query(`
+      SELECT
           F.Airline_Name,
           F.Flight_Num,
           F.Depart_Date,
@@ -73,19 +34,17 @@ customerRoute.get('/past-flights', async (req, res) => {
           C.Email = ?
           AND F.Depart_Date < ?
           AND NOT EXISTS (
-              SELECT 1 FROM Ratings R 
+              SELECT 1 FROM Rating R 
               WHERE R.Airline_Name = F.Airline_Name
-                  AND R.Flight_Num = F.Flight_Num
-                  AND R.Depart_Date = F.Depart_Date
-                  AND R.Depart_Time = F.Depart_Time
-                  AND R.Customer_Email = C.Email
+              AND R.Flight_Num = F.Flight_Num
+              AND R.Depart_Date = F.Depart_Date
+              AND R.Depart_Time = F.Depart_Time
+              AND R.Customer_Email = C.Email
           )
-  `, [email, formattedDate], (err, results) => {
-      if (err) {
-          return res.status(500).json({ message: 'Database error.' });
-      }
-      res.status(200).json(results);
-  });
+      `, [email, formattedDate], (err, results) => {
+          if (err) return res.status(500).json({ message: 'Database error.' });
+          res.status(200).json(results);
+      });
 });
 
 customerRoute.get('/search-flights', async (req, res) => {
@@ -320,12 +279,15 @@ customerRoute.post('/rate-flight', (req, res) => {
       console.error('Database error:', err);
       return res.status(500).json({ error: 'Database error' });
     }
+
+    console.log('Eligibility check results:', results);
     
     if (!results || !results.length) {
       return res.status(403).json({ error: 'You cannot rate a flight you haven\'t flown or bought.' });
     }
 
     // Second query to insert rating
+    // In the rating submission query, change:
     connection.query(`
       INSERT INTO Ratings (
         Customer_Email, Airline_Name, Flight_Num,

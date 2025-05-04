@@ -1,6 +1,6 @@
 import React from 'react';
 import { Badge } from 'react-bootstrap';
-import './FlightTable.css';
+import './FlightTable.css'; // Share the same CSS file
 
 export default function BookedFlightRow({ flight, ticketId }) {
   return (

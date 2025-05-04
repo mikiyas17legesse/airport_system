@@ -156,12 +156,14 @@ const SearchFlights = () => {
               <FlightTable 
                 flights={results.outboundFlights} 
                 onBookFlight={async (bookingData) => {
+                  console.log('Booking data being sent:', bookingData); // Add this line
                   try {
                     const response = await api.post('/customer/purchase-ticket', bookingData);
                     setSuccessMessage(`Success! Your ticket #${response.data.ticket_id} was purchased.`);
                     setError('');
                     return response.data;
                   } catch (error) {
+                    console.error('Full error response:', error.response?.data); // Add this
                     setError(error.response?.data?.error || 'Booking failed');
                     throw error;
                   }

@@ -108,4 +108,13 @@
   color: #000000;
 }
 
+.status-message.success {
+  background-color: #e7f7ed;
+  border: 1px solid #a5d6a7;
+}
 
+.status-message.error {
+  background-color: #fdecea;
+  color: #d32f2f;
+  border: 1px solid #f5c2c7;
+}

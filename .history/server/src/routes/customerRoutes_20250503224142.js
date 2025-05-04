@@ -43,9 +43,11 @@ customerRoute.get('/view-my-flights', async (req, res) => {
 
 customerRoute.get('/past-flights', async (req, res) => {
   const today = new Date();
-  const formattedDate = today.toISOString().split('T')[0]; 
+  const formattedDate = today.toISOString().split('T')[0]; // Format as YYYY-MM-DD
   const { email } = req.query;
   
+  console.log('Fetching past flights for:', email, 'with date:', formattedDate);
+
   connection.query(`
       SELECT DISTINCT
           F.Airline_Name,
@@ -73,7 +75,7 @@ customerRoute.get('/past-flights', async (req, res) => {
           C.Email = ?
           AND F.Depart_Date < ?
           AND NOT EXISTS (
-              SELECT 1 FROM Ratings R 
+              SELECT 1 FROM Rating R 
               WHERE R.Airline_Name = F.Airline_Name
                   AND R.Flight_Num = F.Flight_Num
                   AND R.Depart_Date = F.Depart_Date
@@ -82,8 +84,10 @@ customerRoute.get('/past-flights', async (req, res) => {
           )
   `, [email, formattedDate], (err, results) => {
       if (err) {
+          console.error('Database error:', err);
           return res.status(500).json({ message: 'Database error.' });
       }
+      console.log('Found past flights:', results.length);
       res.status(200).json(results);
   });
 });
@@ -320,12 +324,15 @@ customerRoute.post('/rate-flight', (req, res) => {
       console.error('Database error:', err);
       return res.status(500).json({ error: 'Database error' });
     }
+
+    console.log('Eligibility check results:', results);
     
     if (!results || !results.length) {
       return res.status(403).json({ error: 'You cannot rate a flight you haven\'t flown or bought.' });
     }
 
     // Second query to insert rating
+    // In the rating submission query, change:
     connection.query(`
       INSERT INTO Ratings (
         Customer_Email, Airline_Name, Flight_Num,

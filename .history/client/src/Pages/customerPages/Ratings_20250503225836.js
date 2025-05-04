@@ -23,7 +23,7 @@ const Ratings = () => {
   const handleSubmit = async (flightId) => {
     const flight = flights.find(f => f.id === flightId);
     try {
-      await api.post('/customer/rate-flight', {
+      const response = await api.post('/customer/rate-flight', {
         customer_email: user.email,
         airline_name: flight.Airline_Name,
         flight_num: flight.Flight_Num,
@@ -34,13 +34,13 @@ const Ratings = () => {
       });
       setStatus(prev => ({ 
         ...prev, 
-        [flightId]: "Rating submitted successfully!" 
+        [flightId]: response.data.message || "Rating submitted successfully!" 
       }));
     } catch (err) {
       console.error("Rating submission failed:", err);
       setStatus(prev => ({
         ...prev,
-        [flightId]: "Failed to submit rating"
+        [flightId]: err.response?.data?.message || "Failed to submit rating"
       }));
     }
   };
@@ -55,11 +55,7 @@ const Ratings = () => {
           ...f,
           id: `${f.Airline_Name}_${f.Flight_Num}_${f.Depart_Date}_${f.Depart_Time}`,
           flightNumber: `${f.Airline_Name} ${f.Flight_Num}`,
-          date: new Date(f.Depart_Date).toLocaleDateString('en-US', {
-            year: 'numeric', 
-            month: 'short', 
-            day: 'numeric'
-          }),
+          date: f.Depart_Date,
           from: f.Departure_City,
           to: f.Arrival_City
         }));
@@ -90,12 +86,8 @@ const Ratings = () => {
               <div className="flight-info">
                 <h3>{flight.flightNumber}</h3>
                 <div className="flight-meta">
-                  <div className="flight-date">
-                    <strong>Date:</strong> {flight.date}
-                  </div>
-                  <div className="flight-route">
-                    <strong>Route:</strong> {flight.from} → {flight.to}
-                  </div>
+                  <span><strong>Date:</strong> {flight.date}</span>
+                  <span><strong>Route:</strong> {flight.from} → {flight.to}</span>
                 </div>
               </div>
               
@@ -140,7 +132,7 @@ const Ratings = () => {
                 </button>
                 
                 {status[flight.id] && (
-                  <div className="status-message">
+                  <div className={`status-message ${status[flight.id].includes('success') ? 'success' : 'error'}`}>
                     {status[flight.id]}
                   </div>
                 )}

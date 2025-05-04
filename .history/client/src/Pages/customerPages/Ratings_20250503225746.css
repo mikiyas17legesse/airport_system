@@ -1,0 +1,198 @@
+.rating-label, .comment-label {
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.rating-select {
+  font-size: 1.1rem;
+  padding: 6px 12px;
+  margin-left: 10px;
+  min-width: 70px;
+  border-radius: 20px;
+}
+
+.comment-input {
+  font-size: 1.1rem;
+  padding: 6px 12px;
+  margin-left: 10px;
+  width: 70%;
+  min-width: 250px;
+  max-width: 500px;
+}
+
+.flight-rating-container {
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  margin: 20px;
+  padding: 20px;
+  background: #fafbfc;
+  transition: box-shadow 0.2s;
+}
+
+.flight-rating-container:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+}
+
+.rating-submit-btn {
+  background: linear-gradient(0deg, #1565f9, #1565f9);
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  padding: 10px 28px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+  transition: background 0.2s, box-shadow 0.2s;
+  margin-top: 10px;
+}
+
+.rating-submit-btn:hover {
+  background: linear-gradient(90deg, #38b6ff, #4f8cff);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.10);
+}
+
+.rating-label, .comment-label {
+  margin-bottom: 14px;
+}
+
+.rating-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  margin-top: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.rating-select {
+  margin-left: 0; /* reset */
+  width: 200px;
+}
+
+.comment-input {
+  margin-left: 0; /* reset */
+  width: 100%;
+  max-width: 500px;
+}
+
+.rating-submit-btn {
+  align-self: center;
+}
+
+/* Status message styling */
+.status-message {
+  margin-top: 12px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: center;
+  width: 100%;
+  max-width: 300px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.status-message.success {
+  background-color: #e7f7ed;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+}
+
+.status-message.error {
+  background-color: #fdecea;
+  color: #d32f2f;
+  border: 1px solid #f5c2c7;
+}
+
+/* Animation for success fade */
+.success-fade {
+  animation: successFade 2s forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes successFade {
+  0% { opacity: 1; }
+  70% { opacity: 1; background-color: #e7f7ed; }
+  100% { opacity: 0.5; background-color: #e7f7ed; }
+}
+
+/* Star rating styling */
+.star-rating {
+  display: flex;
+  gap: 5px;
+  font-size: 1.8rem;
+  margin: 5px 0;
+}
+
+.star {
+  cursor: pointer;
+  color: #ddd;
+  transition: color 0.2s ease;
+}
+
+.star:hover, .star.filled {
+  color: #ffc107;
+}
+
+/* Loading spinner */
+.ratings-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #1976d2;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* No flights message */
+.no-flights {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  margin: 20px auto;
+  max-width: 500px;
+}
+
+.no-flights-icon {
+  font-size: 3rem;
+  color: #4caf50;
+  background-color: #e8f5e9;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}

@@ -23,7 +23,7 @@ const Ratings = () => {
   const handleSubmit = async (flightId) => {
     const flight = flights.find(f => f.id === flightId);
     try {
-      await api.post('/customer/rate-flight', {
+      const response = await api.post('/customer/rate-flight', {
         customer_email: user.email,
         airline_name: flight.Airline_Name,
         flight_num: flight.Flight_Num,

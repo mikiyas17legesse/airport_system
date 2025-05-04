@@ -33,6 +33,7 @@ const FlightTable = ({ flights, title, onBookFlight }) => {
   const handleConfirmBooking = async () => {
     if (selectedFlight) {
       try {
+        // Clean card number by removing spaces
         const cleanedPaymentInfo = {
           ...paymentInfo,
           cardNum: paymentInfo.cardNum.replace(/\s/g, '')

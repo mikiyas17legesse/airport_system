@@ -9,7 +9,7 @@
   }
   
   .custom-navbar .nav-link:hover {
-    color: #ffc107 !important; 
+    color: #ffc107 !important; /* Optional: gold on hover */
   }
   
   .custom-navbar .btn-outline-light:hover {

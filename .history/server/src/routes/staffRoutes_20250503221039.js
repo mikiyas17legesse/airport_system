@@ -11,7 +11,7 @@ staffRoute.get('/view-flights', (req, res) => {
       destination_airport,
       source_city,
       destination_city,
-      timeframe 
+      timeframe // NEW: 'past', 'current', 'future', or 'all'
     } = req.query;
 
     let query = `

@@ -42,12 +42,11 @@ customerRoute.get('/view-my-flights', async (req, res) => {
 });
 
 customerRoute.get('/past-flights', async (req, res) => {
-  const today = new Date();
-  const formattedDate = today.toISOString().split('T')[0]; 
+  const date = new Date();
   const { email } = req.query;
-  
+
   connection.query(`
-      SELECT DISTINCT
+      SELECT
           F.Airline_Name,
           F.Flight_Num,
           F.Depart_Date,
@@ -69,21 +68,17 @@ customerRoute.get('/past-flights', async (req, res) => {
               AND T.Depart_Time = F.Depart_Time
           JOIN Airport DA ON F.Departure_Airport = DA.Code
           JOIN Airport AA ON F.Arrival_Airport = AA.Code
+          LEFT JOIN Rating R ON F.Airline_Name = R.Airline_Name
+              AND F.Flight_Num = R.Flight_Num
+              AND F.Depart_Date = R.Depart_Date
+              AND F.Depart_Time = R.Depart_Time
+              AND R.Customer_Email = C.Email
       WHERE
           C.Email = ?
           AND F.Depart_Date < ?
-          AND NOT EXISTS (
-              SELECT 1 FROM Ratings R 
-              WHERE R.Airline_Name = F.Airline_Name
-                  AND R.Flight_Num = F.Flight_Num
-                  AND R.Depart_Date = F.Depart_Date
-                  AND R.Depart_Time = F.Depart_Time
-                  AND R.Customer_Email = C.Email
-          )
+          AND R.Rating_ID IS NULL
   `, [email, formattedDate], (err, results) => {
-      if (err) {
-          return res.status(500).json({ message: 'Database error.' });
-      }
+      if (err) return res.status(500).json({ message: 'Database error.' });
       res.status(200).json(results);
   });
 });
@@ -320,12 +315,15 @@ customerRoute.post('/rate-flight', (req, res) => {
       console.error('Database error:', err);
       return res.status(500).json({ error: 'Database error' });
     }
+
+    console.log('Eligibility check results:', results);
     
     if (!results || !results.length) {
       return res.status(403).json({ error: 'You cannot rate a flight you haven\'t flown or bought.' });
     }
 
     // Second query to insert rating
+    // In the rating submission query, change:
     connection.query(`
       INSERT INTO Ratings (
         Customer_Email, Airline_Name, Flight_Num,

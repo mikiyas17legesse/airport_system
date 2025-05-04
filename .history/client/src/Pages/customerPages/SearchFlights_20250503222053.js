@@ -156,12 +156,18 @@ const SearchFlights = () => {
               <FlightTable 
                 flights={results.outboundFlights} 
                 onBookFlight={async (bookingData) => {
+                  console.log('Booking data being sent:', bookingData);
                   try {
-                    const response = await api.post('/customer/purchase-ticket', bookingData);
+                    const cleanedBookingData = {
+                      ...bookingData,
+                      cardNum: bookingData.cardNum.replace(/\s/g, '')
+                    };
+                    const response = await api.post('/customer/purchase-ticket', cleanedBookingData);
                     setSuccessMessage(`Success! Your ticket #${response.data.ticket_id} was purchased.`);
                     setError('');
                     return response.data;
                   } catch (error) {
+                    console.error('Full error response:', error.response?.data);
                     setError(error.response?.data?.error || 'Booking failed');
                     throw error;
                   }
@@ -173,7 +179,11 @@ const SearchFlights = () => {
                   flights={results.returnFlights}
                   onBookFlight={async (bookingData) => {
                     try {
-                      const response = await api.post('/customer/purchase-ticket', bookingData);
+                      const cleanedBookingData = {
+                        ...bookingData,
+                        cardNum: bookingData.cardNum.replace(/\s/g, '')
+                      };
+                      const response = await api.post('/customer/purchase-ticket', cleanedBookingData);
                       setSuccessMessage(`Success! Your ticket #${response.data.ticket_id} was purchased.`);
                       setError('');
                       return response.data;

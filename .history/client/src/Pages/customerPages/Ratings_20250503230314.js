@@ -23,7 +23,7 @@ const Ratings = () => {
   const handleSubmit = async (flightId) => {
     const flight = flights.find(f => f.id === flightId);
     try {
-      await api.post('/customer/rate-flight', {
+      const response = await api.post('/customer/rate-flight', {
         customer_email: user.email,
         airline_name: flight.Airline_Name,
         flight_num: flight.Flight_Num,
@@ -34,13 +34,13 @@ const Ratings = () => {
       });
       setStatus(prev => ({ 
         ...prev, 
-        [flightId]: "Rating submitted successfully!" 
+        [flightId]: response.data.message || "Rating submitted successfully!" 
       }));
     } catch (err) {
       console.error("Rating submission failed:", err);
       setStatus(prev => ({
         ...prev,
-        [flightId]: "Failed to submit rating"
+        [flightId]: err.response?.data?.message || "Failed to submit rating"
       }));
     }
   };
@@ -140,7 +140,7 @@ const Ratings = () => {
                 </button>
                 
                 {status[flight.id] && (
-                  <div className="status-message">
+                  <div className={`status-message ${status[flight.id].includes('success') ? 'success' : 'error'}`}>
                     {status[flight.id]}
                   </div>
                 )}

@@ -13,13 +13,11 @@ const SearchFlights = () => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState('');
 
   const handleSearch = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
-    setSuccessMessage('');
+    setError("");
     setResults({ outboundFlights: [], returnFlights: [] });
     try {
       const params = {
@@ -71,11 +69,6 @@ const SearchFlights = () => {
     <div>
       {loading && <div style={{textAlign: "center", color: "#1976d2"}}>Loading...</div>}
       {error && <div style={{color: "red", textAlign: "center"}}>{error}</div>}
-      {successMessage && (
-        <div style={{color: "green", textAlign: "center"}}>
-          {successMessage}
-        </div>
-      )}
       <NavigationBar />
       <div style={{ maxWidth: 500, margin: "2rem auto", padding: 24, background: "#fff", borderRadius: 8, boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}>
         <h2 style={{ textAlign: "center", marginBottom: 24 }}>Search Flights</h2>
@@ -158,11 +151,9 @@ const SearchFlights = () => {
                 onBookFlight={async (bookingData) => {
                   try {
                     const response = await api.post('/customer/purchase-ticket', bookingData);
-                    setSuccessMessage(`Success! Your ticket #${response.data.ticket_id} was purchased.`);
-                    setError('');
                     return response.data;
                   } catch (error) {
-                    setError(error.response?.data?.error || 'Booking failed');
+                    console.error('Booking failed:', error);
                     throw error;
                   }
                 }}
@@ -174,11 +165,9 @@ const SearchFlights = () => {
                   onBookFlight={async (bookingData) => {
                     try {
                       const response = await api.post('/customer/purchase-ticket', bookingData);
-                      setSuccessMessage(`Success! Your ticket #${response.data.ticket_id} was purchased.`);
-                      setError('');
                       return response.data;
                     } catch (error) {
-                      setError(error.response?.data?.error || 'Booking failed');
+                      console.error('Booking failed:', error);
                       throw error;
                     }
                   }}
