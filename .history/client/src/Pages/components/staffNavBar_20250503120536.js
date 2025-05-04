@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 const NavigationBar = () => {
 
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
 
   const navigate = useNavigate();
 
@@ -29,7 +29,7 @@ const NavigationBar = () => {
           <Nav.Link className="nav-link-spacing" as={Link} to="/add-airport">Add Airport</Nav.Link>
           <Nav.Link className="nav-link-spacing" as={Link} to="/flight-ratings">View Flight Ratings</Nav.Link>
           <Nav.Link className="nav-link-spacing" as={Link} to="/view-reports">View Reports</Nav.Link>
-          <Nav.Link className="nav-link-spacing" onClick={handleLogout}>Logout</Nav.Link>
+          <Nav.Link className="nav-link-spacing" as={Link} to="/">Logout</Nav.Link>
         </Nav>
       </Container>
     </Navbar>
