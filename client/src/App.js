@@ -1,4 +1,7 @@
 import './App.css';
+import { AuthProvider } from './AuthContext';
+import ProtectedRoute from './ProtectedRoute';
+
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import MainPage from './pages/MainPage';
 import GuestPage from './pages/GuestPage';
@@ -21,27 +24,38 @@ import ViewFlightCustomers from './pages/staffPages/ViewFlightCustomers';
 function App() {
   return (
     <BrowserRouter>
-      <div className="App">
-        <Routes>
-          <Route path="/" element={<MainPage />} />
-          <Route path="/customer-login" element={<CustomerLogin />} />
-          <Route path="/staff-login" element={<StaffLogin />} />
-          <Route path="/guest-page" element={<GuestPage />} />
-          <Route path="/home" element={<HomePage />} />
-          <Route path="/search-flights" element={<SearchFlights />} />
-          <Route path="/submit-ratings" element={<Ratings />} />
-          <Route path="/book-flights" element={<Bookings />} />
-          <Route path="/staff-home" element={<StaffHomePage />} />
-          <Route path="/view-flights" element={<ViewFlights />} />
-          <Route path="/create-flight" element={<CreateFlight />} />
-          <Route path="/change-status" element={<ChangeFlightStatus />} />
-          <Route path="/add-airplane" element={<AddAirplane />} />
-          <Route path="/add-airport" element={<AddAirport />} />
-          <Route path="/flight-ratings" element={<FlightRatings />} />
-          <Route path="/view-reports" element={<ViewReports />} />
-          <Route path="/staff/view-flights/:flightNum/customers" element={<ViewFlightCustomers />} />
-        </Routes>
-      </div>
+      <AuthProvider>
+        <div className="App">
+          <Routes>
+            {/* Public routes */}
+            <Route path="/" element={<MainPage />} />
+            <Route path="/customer-login" element={<CustomerLogin />} />
+            <Route path="/staff-login" element={<StaffLogin />} />
+            <Route path="/guest-page" element={<GuestPage />} />
+            <Route path="/search-flights" element={<SearchFlights />} />
+            
+            {/* Customer-protected routes */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/home" element={<HomePage />} />
+              <Route path="/book-flights" element={<Bookings />} />
+              <Route path="/submit-ratings" element={<Ratings />} />
+            </Route>
+            
+            {/* Staff-protected routes */}
+            <Route element={<ProtectedRoute requiredRole="staff" />}>
+              <Route path="/staff-home" element={<StaffHomePage />} />
+              <Route path="/view-flights" element={<ViewFlights />} />
+              <Route path="/create-flight" element={<CreateFlight />} />
+              <Route path="/change-status" element={<ChangeFlightStatus />} />
+              <Route path="/add-airplane" element={<AddAirplane />} />
+              <Route path="/add-airport" element={<AddAirport />} />
+              <Route path="/flight-ratings" element={<FlightRatings />} />
+              <Route path="/view-reports" element={<ViewReports />} />
+              <Route path="/staff/view-flights/:flightNum/customers" element={<ViewFlightCustomers />} />
+            </Route>
+          </Routes>
+        </div>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

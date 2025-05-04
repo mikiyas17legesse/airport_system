@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../AuthContext';
 import './CustomerLogin.css';
 
 const CustomerLogin = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     email: '', password: '', confirmPassword: '',
@@ -25,7 +27,7 @@ const CustomerLogin = () => {
       alert("Passwords do not match");
       return;
     }
-    // Call the sign up endpoint which handles db querying
+    
     if (isLogin) {
       fetch('/api/auth/customer-login', {
         method: 'POST',
@@ -37,6 +39,11 @@ const CustomerLogin = () => {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
+          const userDataWithRole = {
+            ...data,
+            role: 'customer'
+          };
+          login(userDataWithRole);
           navigate('/home');
         } else {
           alert(data.message);
@@ -58,20 +65,24 @@ const CustomerLogin = () => {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
+          const userDataWithRole = {
+            ...data,
+            role: 'customer'
+          };
+          login(userDataWithRole);
           alert('Customer created successfully!');
-          navigate('/');
+          navigate('/home');
         } else {
           alert(data.message);
         }
       })
       .catch(error => {
         console.error('Error:', error);
-        alert('Failed to create customer.');
+        alert('Failed to sign up.');
       });
     }
   };
 
-  
   const renderNameFields = () => (
     <>
       <h4>Personal Information</h4>

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../AuthContext';
 import './StaffLogin.css';
 
 const StaffLogin = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
 
   const [formData, setFormData] = useState({
@@ -46,10 +48,18 @@ const StaffLogin = () => {
         if (!response.ok) {
           throw new Error(data.message || 'Login/Signup failed');
         }
+        // Add role to user data before saving
+        const userDataWithRole = {
+          ...data,
+          role: 'staff'
+        };
+        
         if (isLogin) {
+          login(userDataWithRole); // Save user info in context and localStorage
           alert('Login successful.');
           navigate('/staff-home');
         } else {
+          login(userDataWithRole); // Save new user info in context and localStorage
           alert('Staff created successfully!');
           navigate('/staff-home');
         }
