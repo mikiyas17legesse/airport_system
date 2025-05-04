@@ -6,7 +6,7 @@ import api from '../api/authHeaders';
 
 const HomePage = () => {
   const { user } = useAuth();
-  const [flights, setFlights] = useState(null);
+  const [flights, setFlights] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const handleViewUpcomingFlights = async () => {
@@ -94,44 +94,43 @@ const HomePage = () => {
                 {loading ? 'Loading...' : 'View My Upcoming Flights'}
               </button>
             </div>
-            {flights === null ? null : (
-              flights.length === 0 ? (
-                <div className="no-flights-message">
-                  <p>You don't have any upcoming flights booked yet.</p>
-                </div>
-              ) : (
-                <div className="flights-container">
-                  <h2>Your Upcoming Flights</h2>
-                  <div className="flights-list">
-                  {flights.map((flight) => (
-                    <div key={`${flight.Flight_Num}-${flight.Depart_Date}`} className="flight-card">
-                      <h3>{flight.Departure_Airport_Name} → {flight.Arrival_Airport_Name}</h3>
-                      <p>Departure: {formatDate(flight.Depart_Date)} at {formatTime(flight.Depart_Time)}</p>
-                      <div className="flight-actions">
-                      <button 
-                          className="cancel-btn"
-                          onClick={() => {
-                              if (!flight.Ticket_ID) {
-                                  console.error('Missing Ticket_ID in flight:', flight);
-                                  return;
-                              }
-                              console.log('Sending cancellation for:', {
-                                  ticketId: flight.Ticket_ID,
-                                  flight: `${flight.Airline_Name} ${flight.Flight_Num}`,
-                                  user: user.email
-                              });
-                              handleCancelTicket(flight.Ticket_ID);
-                          }}
-                          disabled={!isFlightCancellable(flight.Depart_Date, flight.Depart_Time)}
-                          >
-                          Cancel Flight
-                        </button>
-                      </div>
+            {flights.length === 0 && (
+              <div className="no-flights-message">
+                <p>You don't have any upcoming flights booked yet.</p>
+              </div>
+            )}
+            {flights.length > 0 && (
+              <div className="flights-container">
+                <h2>Your Upcoming Flights</h2>
+                <div className="flights-list">
+                {flights.map((flight) => (
+                  <div key={`${flight.Flight_Num}-${flight.Depart_Date}`} className="flight-card">
+                    <h3>{flight.Departure_Airport_Name} → {flight.Arrival_Airport_Name}</h3>
+                    <p>Departure: {formatDate(flight.Depart_Date)} at {formatTime(flight.Depart_Time)}</p>
+                    <div className="flight-actions">
+                    <button 
+                        className="cancel-btn"
+                        onClick={() => {
+                            if (!flight.Ticket_ID) {
+                                console.error('Missing Ticket_ID in flight:', flight);
+                                return;
+                            }
+                            console.log('Sending cancellation for:', {
+                                ticketId: flight.Ticket_ID,
+                                flight: `${flight.Airline_Name} ${flight.Flight_Num}`,
+                                user: user.email
+                            });
+                            handleCancelTicket(flight.Ticket_ID);
+                        }}
+                        disabled={!isFlightCancellable(flight.Depart_Date, flight.Depart_Time)}
+                        >
+                        Cancel Flight
+                      </button>
                     </div>
-                  ))}
                   </div>
+                ))}
                 </div>
-              )
+              </div>
             )}
           </div>
         ) : (

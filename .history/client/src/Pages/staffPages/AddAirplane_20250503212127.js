@@ -20,9 +20,9 @@ const AddAirplane = () => {
     e.preventDefault();
     api
       .post('/staff/add-airplane', data)
-      .then(() => alert('Airplane added successfully.'))
+      .then(() => alert('✅ Airplane added successfully.'))
       .catch((err) =>
-        alert('Error: ' + (err.response?.data || err.message))
+        alert('❌ Error: ' + (err.response?.data || err.message))
       );
   };
 

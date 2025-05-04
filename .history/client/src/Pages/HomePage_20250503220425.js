@@ -75,6 +75,8 @@ const HomePage = () => {
     return hoursUntilFlight > 24;
   };
 
+  
+
   return (
     <div className="dashboard-container">
       <NavigationBar />

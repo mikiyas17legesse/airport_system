@@ -75,6 +75,13 @@ const HomePage = () => {
     return hoursUntilFlight > 24;
   };
 
+  const isWithin24Hours = (departureDate, departureTime) => {
+    const now = new Date();
+    const departure = new Date(`${departureDate}T${departureTime}`);
+    const hoursDiff = (departure - now) / (1000 * 60 * 60);
+    return hoursDiff <= 24;
+  };
+
   return (
     <div className="dashboard-container">
       <NavigationBar />

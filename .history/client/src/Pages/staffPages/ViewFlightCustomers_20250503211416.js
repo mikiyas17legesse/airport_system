@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import api from '../../api/authHeaders';
+import api from '../api/authHeaders';
 import NavigationBar from '../components/staffNavBar';
 import styles from './ViewFlightCustomers.module.css';
 
@@ -12,21 +12,21 @@ const ViewFlightCustomers = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchCustomers = async () => {
-            try {
-                setLoading(true);
-                const response = await api.get(`/flights/${flightNum}/customers`);
-                setCustomers(response.data.customers || []);
-                setError('');
-            } catch (err) {
-                setError(err.response?.data?.message || 'Failed to fetch customers');
-            } finally {
-                setLoading(false);
-            }
-        };
-        
         fetchCustomers();
     }, [flightNum]);
+
+    const fetchCustomers = async () => {
+        try {
+            setLoading(true);
+            const response = await api.get(`/flights/${flightNum}/customers`);
+            setCustomers(response.data.customers || []);
+            setError('');
+        } catch (err) {
+            setError(err.response?.data?.message || 'Failed to fetch customers');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className={`container mt-5 ${styles['customers-root']}`} style={{ paddingTop: '75px' }}>
