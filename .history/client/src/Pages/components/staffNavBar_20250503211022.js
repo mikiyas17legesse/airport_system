@@ -8,8 +8,7 @@ const NavigationBar = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
 
-  const handleLogout = (e) => {
-    e.preventDefault();
+  const handleLogout = () => {
     logout(); // Call the AuthContext logout function to clear auth state
     navigate('/');
   };
