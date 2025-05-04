@@ -3,23 +3,23 @@ import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './context/ProtectedRoute';
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import MainPage from './Pages/MainPage';
-import GuestPage from './Pages/GuestPage';
-import StaffLogin from './Pages/StaffLogin';
-import CustomerLogin from './Pages/CustomerLogin';
-import HomePage from './Pages/HomePage';
-import SearchFlights from './Pages/customerPages/SearchFlights';
-import Ratings from './Pages/customerPages/Ratings';
-import Bookings from './Pages/customerPages/Bookings';
-import StaffHomePage from './Pages/StaffHomePage';
-import ViewFlights from './Pages/staffPages/ViewFlights';
-import CreateFlight from './Pages/staffPages/CreateFlight';
-import ChangeFlightStatus from './Pages/staffPages/ChangeFlightStatus';
-import AddAirplane from './Pages/staffPages/AddAirplane';
-import AddAirport from './Pages/staffPages/AddAirport';
-import FlightRatings from './Pages/staffPages/FlightRatings';
-import ViewReports from './Pages/staffPages/ViewReports';
-import ViewFlightCustomers from './Pages/staffPages/ViewFlightCustomers';
+import MainPage from './pages/MainPage';
+import GuestPage from './pages/GuestPage';
+import StaffLogin from './pages/StaffLogin';
+import CustomerLogin from './pages/CustomerLogin';
+import HomePage from './pages/HomePage';
+import SearchFlights from './pages/customerPages/SearchFlights';
+import Ratings from './pages/customerPages/Ratings';
+import Bookings from './pages/customerPages/Bookings';
+import StaffHomePage from './pages/StaffHomePage';
+import ViewFlights from './pages/staffPages/ViewFlights';
+import CreateFlight from './pages/staffPages/CreateFlight';
+import ChangeFlightStatus from './pages/staffPages/ChangeFlightStatus';
+import AddAirplane from './pages/staffPages/AddAirplane';
+import AddAirport from './pages/staffPages/AddAirport';
+import FlightRatings from './pages/staffPages/FlightRatings';
+import ViewReports from './pages/staffPages/ViewReports';
+import ViewFlightCustomers from './pages/staffPages/ViewFlightCustomers';
 
 function App() {
   return (

@@ -1,7 +1,61 @@
+.view-flights-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  text-align: center;
+}
+
 .view-flights-container h1 {
   margin-bottom: 1.5rem;
   font-weight: 600;
   text-align: center;
+}
+
+.flights-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: auto;
+  width: 100%;
+}
+
+.flights-list table {
+  min-width: 900px;
+  border-collapse: collapse;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.flights-list th, .flights-list td {
+  border: 1px solid #e0e0e0;
+  padding: 0.6rem 1rem;
+  text-align: center;
+}
+
+.flights-list th {
+  background: #f5f5f5;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.flights-list tr:nth-child(even) {
+  background: #fafbfc;
+}
+
+.flights-list tr:hover {
+  background: #f0f7ff;
+}
+
+.no-flights {
+  margin-top: 2rem;
+  font-size: 1.2rem;
 }
 
 .badge {

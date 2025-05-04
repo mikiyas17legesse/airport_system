@@ -4,7 +4,7 @@ const mysql = require('mysql');
 const dbConfig = {
   user: 'root',
   password: 'root',
-  database: 'airport_system',
+  database: 'airline_database',
   socketPath: '/Applications/MAMP/tmp/mysql/mysql.sock'
 };
 

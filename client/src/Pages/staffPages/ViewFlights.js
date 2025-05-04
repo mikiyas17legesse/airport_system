@@ -1,222 +1,108 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import api from '../../api/authHeaders';
 import './ViewFlights.css';
-import StaffLayout from './StaffLayout'; // NEW
+import StaffLayout from './StaffLayout';
 
 const ViewFlights = () => {
-    const [flights, setFlights] = useState([]);
-    const [selectedFlight, setSelectedFlight] = useState(null);
-    const [customers, setCustomers] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-    const [filters, setFilters] = useState({
-        departure: '',
-        arrival: '',
-        startDate: '',
-        endDate: '',
-        airline: ''
-    });
+  const { user } = useAuth();
+  const [flights, setFlights] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-    useEffect(() => {
-        fetchFlights();
-    }, []);
-
-    const fetchFlights = async (params = {}) => {
-        try {
-            setLoading(true);
-            // Changed endpoint to match backend staff route
-            const response = await api.get('/staff/view-flights', { params });
-            setFlights(response.data.flights || response.data);
-            setError('');
-        } catch (err) {
-            setError(err.response?.data?.message || 'Failed to fetch flights');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const fetchFlightCustomers = async (flightId) => {
-        try {
-            setLoading(true);
-            const response = await api.get(`/flights/${flightId}/customers`);
-            setCustomers(response.data.customers);
-            setError('');
-        } catch (err) {
-            setError(err.response?.data?.message || 'Failed to fetch customers');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleFilterChange = (e) => {
-        const { name, value } = e.target;
-        setFilters(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
-    const handleSearch = (e) => {
-        e.preventDefault();
-        fetchFlights({
-            ...filters,
-            startDate: filters.startDate || new Date().toISOString(),
-            endDate: filters.endDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+  useEffect(() => {
+    const fetchFlights = async () => {
+      try {
+        setLoading(true);
+        // Get all flights for the staff's airline (past, current, future)
+        const response = await api.get('/staff/view-flights', {
+          params: { airline_name: user.airlineName }
         });
+        setFlights(response.data.flights || response.data);
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to fetch flights');
+      } finally {
+        setLoading(false);
+      }
     };
+    fetchFlights();
+  }, [user.airlineName]);
 
-    const handleReset = () => {
-        setFilters({
-            departure: '',
-            arrival: '',
-            startDate: '',
-            endDate: '',
-            airline: ''
-        });
-        fetchFlights();
-    };
+  // Helper: Use ISO datetime from backend for display and status
+  const formatDateTime = (isoString) => {
+    if (!isoString) return '';
+    const dt = new Date(isoString);
+    if (isNaN(dt.getTime())) return '';
+    // Format as YYYY-MM-DD HH:mm (24h)
+    return dt.toLocaleString('en-GB', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    }).replace(',', '');
+  };
 
-    const handleViewCustomers = (flight) => {
-        setSelectedFlight(flight);
-        fetchFlightCustomers(flight.Flight_Num);
-    };
+  const getFlightStatus = (departDateIso) => {
+    const now = new Date();
+    const flightTime = new Date(departDateIso);
+    if (flightTime > now) return 'Upcoming';
+    if (flightTime.toDateString() === now.toDateString()) return 'Current';
+    return 'Past';
+  };
 
-    const formatDate = (dateString) => {
-        const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-        return new Date(dateString).toLocaleString('en-US', options);
-    };
-
-    return (
-        <StaffLayout>
-        <div className="container mt-5">
-            <div className="view-flights-container">
-                <h1>Flight Schedule</h1>
-                
-                <div className="flight-filters">
-                    <form onSubmit={handleSearch}>
-                        <div className="filter-row">
-                            <div className="form-group">
-                                <label>Departure Airport</label>
-                                <input 
-                                    type="text" 
-                                    name="departure" 
-                                    value={filters.departure}
-                                    onChange={handleFilterChange}
-                                    placeholder="e.g., JFK"
-                                />
-                            </div>
-                            
-                            <div className="form-group">
-                                <label>Arrival Airport</label>
-                                <input 
-                                    type="text" 
-                                    name="arrival" 
-                                    value={filters.arrival}
-                                    onChange={handleFilterChange}
-                                    placeholder="e.g., LAX"
-                                />
-                            </div>
-                        </div>
-                        
-                        <div className="filter-row">
-                            <div className="form-group">
-                                <label>Start Date</label>
-                                <input 
-                                    type="date" 
-                                    name="startDate" 
-                                    value={filters.startDate}
-                                    onChange={handleFilterChange}
-                                />
-                            </div>
-                            
-                            <div className="form-group">
-                                <label>End Date</label>
-                                <input 
-                                    type="date" 
-                                    name="endDate" 
-                                    value={filters.endDate}
-                                    onChange={handleFilterChange}
-                                />
-                            </div>
-                        </div>
-                        
-                        <div className="filter-row">
-                            <div className="form-group">
-                                <label>Airline</label>
-                                <input 
-                                    type="text" 
-                                    name="airline" 
-                                    value={filters.airline}
-                                    onChange={handleFilterChange}
-                                    placeholder="e.g., Delta"
-                                />
-                            </div>
-                        </div>
-                        
-                        <button type="submit" className="search-button">Search Flights</button>
-                        <button type="button" className="reset-button" onClick={handleReset}>Reset</button>
-                    </form>
-                </div>
-                
-                {loading ? (
-                    <div className="loading">Loading flights...</div>
-                ) : error ? (
-                    <div className="error">{error}</div>
-                ) : (
-                    <div className="flights-list">
-                        {flights.length === 0 ? (
-                            <div className="no-flights">No flights found matching your criteria</div>
-                        ) : (
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Flight #</th>
-                                        <th>Airline</th>
-                                        <th>Departure</th>
-                                        <th>Arrival</th>
-                                        <th>Departure Time</th>
-                                        <th>Arrival Time</th>
-                                        <th>Status</th>
-                                        <th>View Customers</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {flights.map(flight => (
-                                        <tr key={flight.Flight_Num}>
-                                            <td>{flight.Flight_Num}</td>
-                                            <td>{flight.AirlineName}</td>
-                                            <td>{flight.DepartureAirport} ({flight.Departure_Airport})</td>
-                                            <td>{flight.ArrivalAirport} ({flight.Arrival_Airport})</td>
-                                            <td>{formatDate(flight.Departure_Time)}</td>
-                                            <td>{formatDate(flight.Arrival_Time)}</td>
-                                            <td className={`status-${flight.Status.toLowerCase()}`}>
-                                                {flight.Status}
-                                            </td>
-                                            <td>
-                                                <button type="button" onClick={() => handleViewCustomers(flight)}>View Customers</button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        )}
-                    </div>
-                )}
-                
-                {selectedFlight && (
-                    <div className="flight-customers">
-                        <h2>Customers for Flight {selectedFlight.Flight_Num}</h2>
-                        <ul>
-                            {customers.map(customer => (
-                                <li key={customer.Customer_ID}>{customer.Name}</li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
-            </div>
-        </div>
-        </StaffLayout>
-    );
+  return (
+    <StaffLayout>
+      <div className="view-flights-container">
+        <h2>{user.airlineName} Flights</h2>
+        {loading ? (
+          <div className="loading">Loading flights...</div>
+        ) : error ? (
+          <div className="error">{error}</div>
+        ) : (
+          <div className="flights-list">
+            {flights.length === 0 ? (
+              <div className="no-flights">No flights found for your airline</div>
+            ) : (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Flight #</th>
+                    <th>Airline</th>
+                    <th>Departure Airport</th>
+                    <th>Departure City</th>
+                    <th>Arrival Airport</th>
+                    <th>Arrival City</th>
+                    <th>Depart Date/Time</th>
+                    <th>Arrival Date/Time</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {flights.map(flight => (
+                    <tr key={flight.Flight_Num}>
+                      <td>{flight.Flight_Num}</td>
+                      <td>{flight.Airline_Name}</td>
+                      <td>{flight.Departure_Airport}</td>
+                      <td>{flight.Departure_City}</td>
+                      <td>{flight.Arrival_Airport}</td>
+                      <td>{flight.Arrival_City}</td>
+                      <td>{formatDateTime(flight.Depart_Date)}</td>
+                      <td>{formatDateTime(flight.Arrival_Date)}</td>
+                      <td className={`status-${getFlightStatus(flight.Depart_Date).toLowerCase()}`}>
+                        {getFlightStatus(flight.Depart_Date)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        )}
+      </div>
+    </StaffLayout>
+  );
 };
 
 export default ViewFlights;

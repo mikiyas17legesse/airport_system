@@ -3,70 +3,83 @@ const staffRoute = express.Router();
 const connection = require('../db/database.js'); // adjust path if needed
 
 //Staff Use Cases 
-
-// 1. View Future Flights
+// 1. View Flights (Past, Current, Future, All)
 staffRoute.get('/view-flights', (req, res) => {
     const {
       airline_name,
-      start_date,
-      end_date,
       source_airport,
       destination_airport,
       source_city,
-      destination_city
+      destination_city,
+      timeframe // NEW: 'past', 'current', 'future', or 'all'
     } = req.query;
-  
-    // Default to today's date if not provided
-    const startDate = start_date || new Date().toISOString().split('T')[0];
-    const endDate = end_date || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-  
+
     let query = `
-      SELECT F.*, DA.City AS Departure_City, AA.City AS Arrival_City
+      SELECT F.Flight_Num,
+             F.Airline_Name,
+             F.Departure_Airport,
+             F.Arrival_Airport,
+             F.Depart_Date,
+             F.Depart_Time,
+             F.Arrival_Date,
+             F.Arrival_Time,
+             F.Status,
+             DA.City AS Departure_City,
+             AA.City AS Arrival_City
       FROM Flight F
       JOIN Airport DA ON F.Departure_Airport = DA.Code
       JOIN Airport AA ON F.Arrival_Airport = AA.Code
-      WHERE F.Depart_Date BETWEEN ? AND ?
+      WHERE 1=1
     `;
-  
-    const params = [startDate, endDate];
-  
+    const params = [];
+
     if (airline_name) {
       query += ' AND F.Airline_Name = ?';
       params.push(airline_name);
     }
-  
     if (source_airport) {
       query += ' AND F.Departure_Airport = ?';
       params.push(source_airport);
     }
-  
     if (destination_airport) {
       query += ' AND F.Arrival_Airport = ?';
       params.push(destination_airport);
     }
-  
     if (source_city) {
       query += ' AND DA.City = ?';
       params.push(source_city);
     }
-  
     if (destination_city) {
       query += ' AND AA.City = ?';
       params.push(destination_city);
     }
-  
+
+    // Timeframe logic
+    const today = new Date().toISOString().split('T')[0];
+    if (timeframe === 'past') {
+      query += ' AND F.Depart_Date < ?';
+      params.push(today);
+    } else if (timeframe === 'current') {
+      query += ' AND F.Depart_Date = ?';
+      params.push(today);
+    } else if (timeframe === 'future') {
+      query += ' AND F.Depart_Date > ?';
+      params.push(today);
+    }
+    // If timeframe is 'all' or not specified, no date filter is applied
+
     query += ' ORDER BY F.Depart_Date ASC, F.Depart_Time ASC';
-  
+
     connection.query(query, params, (err, results) => {
       if (err) {
         console.error('Error fetching flights:', err);
         return res.status(500).send('Server error.');
       }
-  
       res.json(results);
     });
-  });
-  
+});
+
+
 
 // Create New Flights 
 staffRoute.post('/create-flight', (req, res) => {

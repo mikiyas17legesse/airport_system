@@ -8,6 +8,7 @@ const HomePage = () => {
   const { user } = useAuth();
   const [flights, setFlights] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [hasFetchedFlights, setHasFetchedFlights] = useState(false);
 
   const handleViewUpcomingFlights = async () => {
     try {
@@ -22,6 +23,7 @@ const HomePage = () => {
         departDate: f.Depart_Date
       })));
       setFlights(response.data);
+      setHasFetchedFlights(true);
     } catch (error) {
       console.error('Flight fetch error:', error);
     } finally {
@@ -95,7 +97,7 @@ const HomePage = () => {
                 {loading ? 'Loading...' : 'View My Upcoming Flights'}
               </button>
             </div>
-            {flights.length === 0 && (
+            {hasFetchedFlights && flights.length === 0 && (
               <div className="no-flights-message">
                 <p>You don't have any upcoming flights booked yet.</p>
               </div>
