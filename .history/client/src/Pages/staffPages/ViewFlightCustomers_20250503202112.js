@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import NavigationBar from '../components/staffNavBar';
@@ -10,7 +10,11 @@ const ViewFlightCustomers = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const fetchCustomers = useCallback(async () => {
+    useEffect(() => {
+        fetchCustomers();
+    }, [flightNum, fetchCustomers]);
+
+    const fetchCustomers = async () => {
         try {
             setLoading(true);
             const response = await axios.get(`/api/flights/${flightNum}/customers`);
@@ -21,11 +25,7 @@ const ViewFlightCustomers = () => {
         } finally {
             setLoading(false);
         }
-    }, [flightNum]);
-
-    useEffect(() => {
-        fetchCustomers();
-    }, [fetchCustomers]);
+    };
 
     return (
         <div className={`container mt-5`} style={{ paddingTop: '75px' }}>

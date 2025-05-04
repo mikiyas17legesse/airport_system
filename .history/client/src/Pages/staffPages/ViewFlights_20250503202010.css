@@ -1,11 +1,22 @@
-.customers-root {
+.view-flights-container h1 {
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.badge {
+  text-transform: capitalize;
+  font-size: 0.9rem;
+}
+
+.flights-root {
   min-height: 100vh;
   padding-top: 75px;
   display: flex;
   flex-direction: column;
 }
 
-.customers-content {
+.flights-content {
   flex: 1 0 auto;
   display: flex;
   flex-direction: column;

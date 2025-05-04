@@ -1,17 +1,15 @@
 import React, { useState } from 'react';
-import api from '../../api/authHeaders';
+import axios from 'axios';
 import StaffLayout from './StaffLayout';
 import './ViewReports.css';
 
 const ViewReports = () => {
+  const [range, setRange] = useState({ startDate: '', endDate: '' });
   const [reports, setReports] = useState([]);
-  const [range, setRange] = useState({});
-
-  const handleChange = (e) => setRange({ ...range, [e.target.name]: e.target.value });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    api.get('/api/staff/view-reports', { params: range })
+    axios.get('/api/staff/view-reports', { params: range })
       .then(res => setReports(res.data))
       .catch(err => alert('Error: ' + err.response?.data || err.message));
   };
@@ -20,26 +18,30 @@ const ViewReports = () => {
     <StaffLayout>
       <div className="report-container">
         <h2>Ticket Sales Report</h2>
-        
-        <form onSubmit={handleSubmit} className="date-range-form">
-          <div className="date-inputs">
-            <input
-              type="date"
-              name="startDate"
-              onChange={handleChange}
-              value={range.startDate || ''}
-              required
-            />
-            <span>to</span>
-            <input
-              type="date"
-              name="endDate"
-              onChange={handleChange}
-              value={range.endDate || ''}
-              required
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label>Start Date</label>
+            <input 
+              type="date" 
+              className="form-control" 
+              name="startDate" 
+              value={range.startDate} 
+              onChange={(e) => setRange({...range, startDate: e.target.value})} 
+              required 
             />
           </div>
-          <button type="submit" className="generate-btn">Generate Report</button>
+          <div className="mb-3">
+            <label>End Date</label>
+            <input 
+              type="date" 
+              className="form-control" 
+              name="endDate" 
+              value={range.endDate} 
+              onChange={(e) => setRange({...range, endDate: e.target.value})} 
+              required 
+            />
+          </div>
+          <button className="btn btn-dark">Generate Report</button>
         </form>
 
         {reports.length > 0 && (

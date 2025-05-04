@@ -1,0 +1,20 @@
+.custom-navbar {
+    background-color: #c1121f !important; /* Deep red */
+  }
+  
+  .custom-navbar .navbar-brand,
+  .custom-navbar .nav-link,
+  .custom-navbar .btn {
+    color: white !important;
+  }
+  
+  .custom-navbar .nav-link:hover {
+    color: #ffc107 !important; /* Optional: gold on hover */
+  }
+  
+  .custom-navbar .btn-outline-light:hover {
+    background-color: white;
+    color: #c1121f !important;
+    border-color: white;
+  }
+  

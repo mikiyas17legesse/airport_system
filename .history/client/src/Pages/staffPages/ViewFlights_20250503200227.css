@@ -1,0 +1,10 @@
+.view-flights-container h1 {
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.badge {
+  text-transform: capitalize;
+  font-size: 0.9rem;
+}

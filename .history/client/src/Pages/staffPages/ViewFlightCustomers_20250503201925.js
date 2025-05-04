@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import NavigationBar from '../components/staffNavBar';
+import styles from './ViewFlightCustomers.module.css';
 
 const ViewFlightCustomers = () => {
     const { flightNum } = useParams();
@@ -10,7 +11,11 @@ const ViewFlightCustomers = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const fetchCustomers = useCallback(async () => {
+    useEffect(() => {
+        fetchCustomers();
+    }, [flightNum, fetchCustomers]);
+
+    const fetchCustomers = async () => {
         try {
             setLoading(true);
             const response = await axios.get(`/api/flights/${flightNum}/customers`);
@@ -21,16 +26,12 @@ const ViewFlightCustomers = () => {
         } finally {
             setLoading(false);
         }
-    }, [flightNum]);
-
-    useEffect(() => {
-        fetchCustomers();
-    }, [fetchCustomers]);
+    };
 
     return (
-        <div className={`container mt-5`} style={{ paddingTop: '75px' }}>
+        <div className={`container mt-5 ${styles['customers-root']}`} style={{ paddingTop: '75px' }}>
             <NavigationBar />
-            <div className={`view-customers-container`}>
+            <div className={`view-customers-container ${styles['customers-content']}`}>
                 <h2>Customers for Flight {flightNum}</h2>
                 {loading ? (
                     <div>Loading customers...</div>
